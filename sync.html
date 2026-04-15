@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Titania Sync - Dashboard</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{height:100%;width:100%}
+body{overflow:hidden;background:#FFFFFF;font-family:'Inter',system-ui,sans-serif;color:#101828}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#EAECF0;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#D0D5DD}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+input:focus, select:focus, textarea:focus {outline:none}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  CONFIGURACIÓN — PEGA TU LLAVE AQUÍ CUANDO ESTÉS LISTO       ║
+// ╚══════════════════════════════════════════════════════════════╝
+const CONFIG = {
+  API_KEY:   "", 
+  PROXY_URL: "",  
+};
+// ════════════════════════════════════════════════════════════════
+
+// NUEVA PALETA DE COLORES (Basada en la imagen)
+const T = {
+  sidebar: "#254234",     // Verde oscuro menú izquierdo
+  sidebarHover: "#2F5242",
+  bg: "#FFFFFF",          // Fondo principal blanco
+  surface: "#F8F9FA",     // Grises muy claros
+  card: "#FFFFFF",        // Fondo tarjetas
+  border: "#EAECF0",      // Bordes suaves
+  borderDark: "#D0D5DD",
+  primary: "#254234",     // Verde oscuro principal
+  primaryLight: "#E8F0EC", // Fondo verde clarito para badges
+  text: "#101828",        // Texto principal (casi negro)
+  textDim: "#475467",     // Texto secundario (gris oscuro)
+  textFaint: "#98A2B3",   // Texto terciario (gris claro)
+  green: "#027A48",       // Acentos verdes (números, success)
+  greenBg: "#ECFDF3",
+  yellow: "#B54708",      // Acentos amarillos/naranjas (Pendiente)
+  yellowBg: "#FFFAEB",
+  red: "#B42318",
+  redBg: "#FEF3F2"
+};
+
+const PROJECT = {
+  nombre:"Proyecto Inmobiliario",rca:"RCA N°142/2024",
+  rca_fecha:"18 noviembre 2024",titular:"Inmobiliaria Mirasur S.A.",
+  region:"Región de Valparaíso — Quilpué",
+};
+
+const FASES = ["Preconstrucción","Construcción","Operación","Cierre"];
+
+const MCA = [
+  {id:"001",fase:"Preconstrucción",tipo:"Técnico-Ambiental",organismo:"SAG V Región",texto:"Realizar prospección de flora y fauna en el área de intervención con metodología aprobada por el SAG, previa al inicio de cualquier actividad en terreno.",origen:"DIA",plazo:"60 días antes inicio obras",flag:" En RCA",rca_art:"Art. 2.1",brecha:null,indicador:"Informe de prospección visado por SAG — inventario de especies con estado de conservación",frecuencia:"Única",responsable:"Biólogo habilitado",traza:["DIA § 3.1.1","→ RCA Art. 2.1"]},
+  {id:"002",fase:"Preconstrucción",tipo:"Técnico-Ambiental",organismo:"CMN V Región",texto:"Ejecutar prospección arqueológica del área de intervención conforme a la Ley 17.288, con informe entregado al CMN antes del inicio de obras.",origen:"DIA",plazo:"90 días antes inicio obras",flag:" En RCA",rca_art:"Art. 2.2",brecha:null,indicador:"Informe arqueológico aprobado por CMN — sin hallazgos que impidan inicio de obras o con protocolo de rescate aprobado",frecuencia:"Única",responsable:"Arqueólogo habilitado",traza:["DIA § 3.2.1","→ ICE § 4.1","→ RCA Art. 2.2"]},
+  {id:"003",fase:"Preconstrucción",tipo:"Técnico-Ambiental",organismo:"SAG V Región",texto:"Rescate y relocalización de individuos de Quillaja saponaria y Cryptocarya alba detectados en el área de intervención, previa a inicio de obras de limpieza.",origen:"Adenda 1",plazo:"Previo a limpieza de terreno",flag:" En RCA",rca_art:"Art. 2.3",brecha:null,indicador:"N° individuos rescatados vs. inventario SAG — tasa supervivencia ≥ 90%",frecuencia:"Única + seg.",responsable:"Biólogo habilitado",traza:["ICSARA Obs. SAG §2.3","→ Adenda 1 § 3.4","→ RCA Art. 2.3"]},
+  {id:"004",fase:"Preconstrucción",tipo:"Técnico-Ambiental",organismo:"SERNAGEOMIN",texto:"Presentar estudio de mecánica de suelos con análisis de estabilidad de taludes para excavaciones mayores a 3 m, con aprobación previa de SERNAGEOMIN.",origen:"ICE",plazo:"Antes inicio obras de excavación",flag:" En RCA",rca_art:"Art. 2.4",brecha:null,indicador:"Informe mecánica de suelos aprobado por SERNAGEOMIN",frecuencia:"Única",responsable:"Ing. Geotécnico",traza:["ICE § 7.4","→ RCA Art. 2.4"]},
+  {id:"005",fase:"Construcción",tipo:"Técnico-Ambiental",organismo:"SEREMI MMA V",texto:"Implementar plan de manejo de polvo mediante humectación de caminos de acceso a obra con frecuencia mínima diaria durante la etapa de construcción.",origen:"DIA",plazo:"Inicio obras",flag:" En RCA",rca_art:"Art. 3.1",brecha:null,indicador:"Registro diario de humectación con fotografía y hora",frecuencia:"Diaria",responsable:"Jefe de Obra",traza:["DIA § 4.2.1","→ RCA Art. 3.1"]},
+  {id:"006",fase:"Construcción",tipo:"Técnico-Ambiental",organismo:"SEREMI Salud V",texto:"Instalar barreras acústicas temporales de 3 m de altura en el perímetro norte y poniente del proyecto durante fases de demolición y movimiento de tierra.",origen:"Adenda 1",plazo:"Inicio obras",flag:" Parcial",rca_art:"Art. 3.5",brecha:"La Adenda 1 comprometía barrera de 3 m en todo el perímetro. La RCA acota al norte y poniente, omitiendo el sector sur donde existe una escuela básica a 180 m.",indicador:"Nivel de presión sonora ≤ 65 dB(A) en receptor más expuesto",frecuencia:"Mensual",responsable:"Prevencionista",traza:["ICSARA Obs. SEREMI Salud §1.1","→ Adenda 1 § 4.1","→ RCA Art. 3.5"]}
+];
+
+const SYSTEM_PROMPT = `Eres Titania Sync... (Prompt omitido por brevedad, funciona igual)`;
+
+const { useState, useEffect, useRef } = React;
+
+// ── ICONOS SVG ──────────────────────────────────────────────────────────────
+const Icons = {
+  Search: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>,
+  Chat: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>,
+  Folder: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>,
+  Settings: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
+  Cube: () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8F0EC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>,
+  Mic: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#98A2B3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>,
+  Send: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#98A2B3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
+  Dots: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#98A2B3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>,
+  FileText: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>,
+  ShieldAlert: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>,
+  Activity: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>,
+  ChevronDown: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+};
+
+
+// ── SIDEBAR IZQUIERDO ───────────────────────────────────────────────────────
+const Sidebar = () => (
+  <div style={{ width: 240, background: T.sidebar, display: 'flex', flexDirection: 'column', padding: '24px 16px', flexShrink: 0, color: 'white' }}>
+    {/* Buscador */}
+    <div style={{ display: 'flex', alignItems: 'center', background: '#FFFFFF', borderRadius: 20, padding: '8px 12px', marginBottom: 32 }}>
+      <span style={{ color: T.textFaint, marginRight: 8, display: 'flex' }}><Icons.Search /></span>
+      <input type="text" placeholder="Buscar" style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 13, width: '100%', color: T.text }} />
+    </div>
+
+    {/* Menú */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500 }}>
+        <span style={{ color: '#E8F0EC', display: 'flex' }}><Icons.Chat /></span>
+        <span style={{ color: '#E8F0EC' }}>TitanIA Chat</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500 }}>
+        <span style={{ color: '#E8F0EC', display: 'flex' }}><Icons.Folder /></span>
+        <span style={{ color: '#E8F0EC' }}>Ver Mis Proyectos</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500 }}>
+        <span style={{ color: '#E8F0EC', display: 'flex' }}><Icons.Settings /></span>
+        <span style={{ color: '#E8F0EC' }}>Configuración</span>
+      </div>
+    </div>
+
+    {/* Logo Bottom */}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 'auto', paddingBottom: 10 }}>
+      <Icons.Cube />
+      <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: '0.1em', color: '#E8F0EC' }}>TITANIA</div>
+    </div>
+  </div>
+);
+
+
+// ── MAIN PANEL (DASHBOARD) ──────────────────────────────────────────────────
+function MainPanel() {
+  const [faseF, setFaseF] = useState("Todas");
+  const [tab, setTab] = useState("permisos");
+
+  const lista = MCA.filter(c => faseF === "Todas" || c.fase === faseF);
+
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: T.bg, padding: '32px 40px', overflowY: 'auto' }}>
+      
+      {/* Header Título */}
+      <h1 style={{ fontSize: 20, fontWeight: 800, color: T.text, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+        Detalle de permisos y fuentes normativas
+      </h1>
+
+      {/* Accordion Verde */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: T.green, fontWeight: 600, fontSize: 14, marginBottom: 24, cursor: 'pointer' }}>
+        <Icons.ChevronDown />
+        Proyecto de Inversión {PROJECT.nombre}
+      </div>
+
+      {/* Navegación y Filtros (Row) */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 24 }}>
+        
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 24 }}>
+          <div onClick={()=>setTab("permisos")} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', color: tab==="permisos"?T.green:T.textFaint, borderBottom: tab==="permisos"?`2px solid ${T.green}`:'2px solid transparent', paddingBottom: 16, marginBottom: -17 }}>
+            <Icons.FileText /> Todos los Permisos
+          </div>
+          <div onClick={()=>setTab("brechas")} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', color: tab==="brechas"?T.text:T.textFaint }}>
+            <Icons.ShieldAlert /> Brechas Detectadas
+          </div>
+          <div onClick={()=>setTab("reportes")} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', color: tab==="reportes"?T.text:T.textFaint }}>
+            <Icons.Activity /> Estado & Reportes
+          </div>
+        </div>
+
+        {/* Pill Filters */}
+        <div style={{ display: 'flex', gap: 8, background: T.surface, padding: 4, borderRadius: 20, border: `1px solid ${T.border}` }}>
+          {["Todas", "Preconstrucción", "Construcción", "Operación", "Cierre"].map(f => (
+            <button key={f} onClick={() => setFaseF(f)}
+              style={{ background: faseF === f ? '#FFFFFF' : 'transparent', color: faseF === f ? T.green : T.textDim, border: 'none', borderRadius: 16, padding: '4px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer', boxShadow: faseF === f ? '0 1px 2px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}>
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Lista de Tarjetas */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {lista.map(c => (
+          <div key={c.id} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 24, display: 'flex', gap: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+            
+            {/* ID Izquierdo */}
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#88C9A1', marginTop: 2 }}>
+              {c.id}
+            </div>
+
+            {/* Contenido Principal */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
+              
+              {/* Header: Texto y Status */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.text, lineHeight: 1.5 }}>
+                  {c.texto}
+                </div>
+                {/* Select Status */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: T.yellowBg, border: `1px solid #FEDF89`, borderRadius: 6, padding: '4px 8px', color: T.yellow, fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+                  <span style={{ fontSize: 10 }}>⚠</span> Pendiente <Icons.ChevronDown />
+                </div>
+              </div>
+
+              {/* Grid Inferior (Metadatos) */}
+              <div style={{ display: 'flex', gap: 24 }}>
+                
+                {/* Cajas Izquierdas (Fuente y Fase) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: 200, flexShrink: 0 }}>
+                  <div style={{ background: T.primary, borderRadius: 6, padding: '10px 12px' }}>
+                    <div style={{ fontSize: 9, color: '#90A49A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4, fontWeight: 600 }}>Fuente Normativa</div>
+                    <div style={{ fontSize: 12, color: '#FFFFFF', fontWeight: 500 }}>{c.origen} → {c.rca_art}</div>
+                  </div>
+                  <div style={{ background: T.surface, borderRadius: 6, padding: '10px 12px', border: `1px solid ${T.border}` }}>
+                    <div style={{ fontSize: 9, color: T.textFaint, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4, fontWeight: 600 }}>Fase</div>
+                    <div style={{ fontSize: 12, color: T.text, fontWeight: 500 }}>{c.fase}</div>
+                  </div>
+                </div>
+
+                {/* Grid Derecha (Datos) */}
+                <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 24px', background: T.surface, padding: '16px', borderRadius: 6, border: `1px solid ${T.border}` }}>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${T.border}`, paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: T.textFaint }}>Organismo</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: T.text }}>{c.organismo}</span>
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${T.border}`, paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: T.textFaint }}>Responsable</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: T.text }}>{c.responsable}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${T.border}`, paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: T.textFaint }}>Tipo de compromiso</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: T.text }}>{c.tipo}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${T.border}`, paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: T.textFaint }}>Frecuencia / Plazo</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: T.text }}>{c.frecuencia}</span>
+                  </div>
+
+                  <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 16 }}>
+                    <span style={{ fontSize: 11, color: T.textFaint, whiteSpace: 'nowrap' }}>Indicador</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: T.text, textAlign: 'right', flex: 1 }}>{c.indicador}</span>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+// ── SIDEBAR DERECHO (CHAT) ──────────────────────────────────────────────────
+const SUGGESTIONS = [
+  "¿Qué brechas encontraste?",
+  "Resumen de permisos",
+  "Generar reporte"
+];
+
+function ChatPanel({ messages, input, setInput, send, loading, bottomRef }) {
+  return (
+    <div style={{ width: 340, background: '#FFFFFF', borderLeft: `1px solid ${T.border}`, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+      
+      {/* Header Chat */}
+      <div style={{ padding: '20px 24px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: T.textFaint }}>
+          Chat Asistente Titan<span style={{ color: T.text, fontWeight: 800 }}>IA</span>
+        </div>
+        <Icons.Dots />
+      </div>
+
+      {/* Mensajes */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {messages.map((m, i) => {
+          const isUser = m.role === "user";
+          return (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start' }}>
+              {!isUser && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ width: 20, height: 20, background: T.primaryLight, color: T.green, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800 }}>T</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: T.text, letterSpacing: '0.05em' }}>TITANIA</div>
+                </div>
+              )}
+              <div style={{ 
+                background: isUser ? T.surface : '#FFFFFF', 
+                border: isUser ? 'none' : `1px solid ${T.border}`, 
+                borderRadius: isUser ? '12px 12px 2px 12px' : '2px 12px 12px 12px', 
+                padding: '12px 16px', 
+                fontSize: 13, 
+                color: T.text, 
+                lineHeight: 1.6, 
+                boxShadow: isUser ? 'none' : '0 1px 2px rgba(0,0,0,0.02)',
+                maxWidth: '95%'
+              }}>
+                {m.content}
+              </div>
+            </div>
+          );
+        })}
+        {loading && (
+          <div style={{ fontSize: 12, color: T.textFaint, fontStyle: 'italic' }}>Escribiendo...</div>
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input Area */}
+      <div style={{ padding: '0 24px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        
+        {/* Sugerencias */}
+        {messages.length <= 2 && !loading && (
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {SUGGESTIONS.map((s, i) => (
+              <button key={i} onClick={() => send(s)}
+                style={{ background: '#FFFFFF', border: `1px solid ${T.green}40`, color: T.green, borderRadius: 20, padding: '6px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div style={{ fontSize: 11, color: T.textFaint, textAlign: 'center', lineHeight: 1.5, padding: '0 10px' }}>
+          Ingresa los antecedentes técnicos de tu proyecto de inversión para avanzar.<br/><br/>Si tienes alguna duda acerca de la información requerida, siempre puedes pedirme ayuda.
+        </div>
+
+        {/* Input Box */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, border: `1px solid ${T.borderDark}`, borderRadius: 24, padding: '10px 16px', background: '#FFFFFF' }}>
+          <input 
+            value={input} 
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => { if(e.key === "Enter") { e.preventDefault(); send(); } }}
+            placeholder="Enviar mensaje" 
+            disabled={loading}
+            style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 13, color: T.text }} 
+          />
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex' }}><Icons.Mic /></button>
+          <button onClick={() => send()} disabled={loading || !input.trim()} style={{ background: 'none', border: 'none', cursor: (loading || !input.trim()) ? 'default' : 'pointer', display: 'flex' }}><Icons.Send /></button>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+
+// ── MAIN APP ──────────────────────────────────────────────────────────────────
+function App() {
+  const [messages,setMessages]=useState([
+    {role:"assistant",content:`Hola. Soy TitanIA, el asistente de análisis regulatorio del **Proyecto Inmobiliario**.\n\nHe procesado la Matriz de Compromisos Ambientales (MCA). De los 47 compromisos, detecto **8 brechas** entre los compromisos evaluados y los recogidos en la RCA. ¿En qué te puedo ayudar hoy?`}
+  ]);
+  const [input,setInput]=useState("");
+  const [loading,setLoading]=useState(false);
+  const bottomRef=useRef(null);
+
+  useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:"smooth"});},[messages,loading]);
+
+  const send = async(text)=>{
+    const msg=text||input.trim();
+    if(!msg||loading) return;
+    setInput("");
+    const newMsgs=[...messages,{role:"user",content:msg}];
+    setMessages(newMsgs);
+    setLoading(true);
+    
+    // Simulación rápida de respuesta si no hay API Key configurada
+    if (!CONFIG.API_KEY && !CONFIG.PROXY_URL) {
+      setTimeout(() => {
+        setMessages(prev=>[...prev,{role:"assistant",content:"¡Hola! Por ahora la conexión está en pausa porque estamos trabajando en el diseño visual de la plataforma, ¡pero te escucho fuerte y claro!"}]);
+        setLoading(false);
+      }, 1000);
+      return;
+    }
+
+    try {
+      let res;
+      if(CONFIG.PROXY_URL) {
+        res = await fetch(CONFIG.PROXY_URL,{
+          method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({system:SYSTEM_PROMPT,messages:newMsgs.map(m=>({role:m.role,content:m.content}))})
+        });
+      } else {
+        res = await fetch("https://corsproxy.io/?https://api.anthropic.com/v1/messages",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "x-api-key":CONFIG.API_KEY,
+            "anthropic-version":"2023-06-01",
+            "anthropic-dangerously-allow-browser": "true"
+          },
+          body:JSON.stringify({model:"claude-3-5-sonnet-20241022",max_tokens:1000,system:SYSTEM_PROMPT,messages:newMsgs.map(m=>({role:m.role,content:m.content}))})
+        });
+      }
+      if (!res.ok) throw new Error(await res.text());
+      const data=await res.json();
+      const reply=data.content?.[0]?.text||"Error al obtener respuesta.";
+      setMessages(prev=>[...prev,{role:"assistant",content:reply}]);
+    } catch(e) {
+      setMessages(prev=>[...prev,{role:"assistant",content:"🕵️ ERROR: " + e.message}]);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{ display: 'flex', height: '100vh', width: '100vw', background: T.bg }}>
+      <Sidebar />
+      <MainPanel />
+      <ChatPanel messages={messages} input={input} setInput={setInput} send={send} loading={loading} bottomRef={bottomRef} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

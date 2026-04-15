@@ -2,13 +2,136 @@
 
 import { useState, useEffect, useRef } from "react";
 import { PROJECT, FASES, MCA, SYSTEM_PROMPT } from "../data/mca";
-import { Search, MessageSquare, Folder, Settings, Mic, Send, ChevronDown, CheckCircle2, AlertTriangle, FileText, Activity, ShieldAlert } from "lucide-react";
+import { Search, Sparkles as MessageSquare, Layers as Folder, SlidersHorizontal as Settings, Mic, SendHorizontal as Send, ChevronDown, ShieldCheck as CheckCircle2, TriangleAlert as AlertTriangle, BookOpen as FileText, Activity, BadgeAlert as ShieldAlert, Menu, X, UploadCloud } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+const INITIAL_BIBLIOTECA_DOCS = [
+  { id: 1, tipo: "RCA", titulo: "Resolución de Calificación Ambiental (RCA)", fecha: "12/08/2023", autor: "SEA", estado: "Firmado digitalmente", file: "RCA_N_202510001198__Brisas_de_Mirasur___003__firmada.pdf", url: "/biblioteca/RCA_N_202510001198__Brisas_de_Mirasur___003__firmada.pdf" },
+  { id: 2, tipo: "ICE", titulo: "Informe Consolidado de Evaluación (ICE)", fecha: "25/07/2023", autor: "SEA", estado: "Aprobado", file: "Documento - 2025_09_30_cc95-c9d7-46d8-ad29-746266234343.pdf", url: "/biblioteca/Documento - 2025_09_30_cc95-c9d7-46d8-ad29-746266234343.pdf" },
+  { id: 3, tipo: "Adenda", titulo: "Adenda Complementaria", fecha: "10/06/2023", autor: "Titular", estado: "Revisada - 4 Anexos", file: "Documento - 2025_07_31_dd73-f244-4fb8-8bbc-f6138d26d275.pdf", url: "/biblioteca/Documento - 2025_07_31_dd73-f244-4fb8-8bbc-f6138d26d275.pdf" },
+  { id: 4, tipo: "Adenda", titulo: "Adenda N°1", fecha: "15/04/2023", autor: "Titular", estado: "Entregada - 17 Anexos", file: "Documento - 2025_01_06_e924-8f91-46a1-b6af-59a0d5e8c99f.pdf", url: "/biblioteca/Documento - 2025_01_06_e924-8f91-46a1-b6af-59a0d5e8c99f.pdf" },
+  { id: 5, tipo: "ICSARA", titulo: "Informe Consolidado de Solicitud de Aclaraciones", fecha: "20/03/2023", autor: "SEA", estado: "Emitido", file: "icsara_1.pdf", url: "#" },
+  { id: 6, tipo: "Oficio", titulo: "Oficio pronunciamiento con observaciones", fecha: "05/03/2023", autor: "SISS", estado: "Con observaciones", file: "oficio_siss_obs.pdf", url: "#" },
+  { id: 7, tipo: "Oficio", titulo: "Oficio pronunciamiento conforme con condición", fecha: "02/03/2023", autor: "CMN", estado: "Conforme", file: "oficio_cmn_cond.pdf", url: "#" },
+  { id: 8, tipo: "DIA", titulo: "Declaración de Impacto Ambiental (DIA)", fecha: "10/01/2023", autor: "Titular", estado: "Ingresada - 43 Anexos", file: "1761338287_2166686677.pdf", url: "/biblioteca/1761338287_2166686677.pdf" }
+];
 
 export default function TitaniaApp() {
   // ── STATES ──
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const auth = localStorage.getItem('titania_auth');
+      if (auth === 'true') {
+        setIsAuthenticated(true);
+      }
+      setIsAuthChecked(true);
+    }
+  }, []);
+  
   const [activeTab, setActiveTab] = useState("mca"); // "mca", "brechas", "reporte"
   const [faseFilter, setFaseFilter] = useState("Todas");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showMobileChat, setShowMobileChat] = useState(false);
+  const [isProjectsOpen, setIsProjectsOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [bibliotecaDocs, setBibliotecaDocs] = useState(INITIAL_BIBLIOTECA_DOCS);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [tourStep, setTourStep] = useState(0); // 0=off, 1=sidebar, 2=chat, 3=dashboard
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [pdfReportData, setPdfReportData] = useState<{title: string, content: string} | null>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  const requestPdfReport = async (tipo: 'consolidado' | 'brechas') => {
+    setIsGeneratingPdf(true);
+    setPdfReportData(null);
+    try {
+      const promptContext = SYSTEM_PROMPT + "\n\nESTADO ACTUAL DE LA MCA:\n" + 
+        JSON.stringify(estado) + "\n\nMCA COMPLETA:\n" + JSON.stringify(MCA);
+        
+      const instruction = tipo === 'consolidado' 
+        ? "Redacta un Informe Consolidado de Cumplimiento Ambiental extenso, detallado y exhaustivo para el proyecto, cubriendo sin omisiones todo el índice de contenidos que propongas. Resume el estado general de los compromisos e identifica tendencias profunda y analíticamente. Usa un tono oficial y técnico. Formatea minuciosamente con Markdown. REGLA ESTRICTA: NO escribas 'Brisas de Mirasur' ni 'Mirasur'. Debes usar 'Proyecto Inmobiliario (DEMO)' en todos los lugares."
+        : "Redacta un Reporte Oficial de Brechas Normativas largo, extenso y detallado, enfocado estrictamente en desarrollar ampliamente las discrepancias. Elabora una síntesis ejecutiva profunda del riesgo que representan cada una. Usa lenguaje formal con Markdown. REGLA ESTRICTA: NO escribas 'Brisas de Mirasur' ni 'Mirasur'. Debes usar 'Proyecto Inmobiliario (DEMO)' en todos los lugares.";
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system: promptContext,
+          messages: [{role: "user", content: instruction}],
+        })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      
+      const reportTitle = tipo === 'consolidado' 
+        ? 'Informe Consolidado - Proyecto Inmobiliario (DEMO)' 
+        : 'Reporte de Brechas - Proyecto Inmobiliario (DEMO)';
+
+      setPdfReportData({ 
+        title: reportTitle, 
+        content: data.text 
+      });
+      
+      setTimeout(() => {
+        const originalTitle = document.title;
+        document.title = reportTitle;
+        window.print();
+        setTimeout(() => {
+          document.title = originalTitle;
+          setPdfReportData(null);
+        }, 1000); // Cleanup after closing print dialog
+      }, 500);
+    } catch (e) {
+      console.error(e);
+      alert("Hubo un error al generar el reporte con TitanIA.");
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const lowerName = file.name.toLowerCase();
+    let tipo = "Carpeta";
+    let titulo = "Documento SEIA Añadido";
+    let autor = "Usuario Titular";
+    
+    if (lowerName.includes("rca")) { tipo = "RCA"; titulo = "Resolución de Calificación Ambiental"; autor = "SEA"; }
+    else if (lowerName.includes("adenda")) { tipo = "Adenda"; titulo = "Adenda del Titular"; autor = "Titular"; }
+    else if (lowerName.includes("ice")) { tipo = "ICE"; titulo = "Informe Consolidado de Evaluación"; autor = "SEA"; }
+    else if (lowerName.includes("oficio")) { tipo = "Oficio"; titulo = "Oficio pronunciamiento"; autor = "OAECA"; }
+    else if (lowerName.includes("dia")) { tipo = "DIA"; titulo = "Declaración de Impacto Ambiental"; autor = "Titular"; }
+    else {
+      tipo = "Anexo";
+      titulo = file.name.replace('.pdf', '').substring(0, 40);
+      autor = "Titular";
+    }
+
+    const newDoc = {
+      id: Date.now(),
+      tipo,
+      titulo,
+      fecha: new Date().toLocaleDateString('es-CL'),
+      autor,
+      estado: "Cargado al sistema",
+      file: file.name,
+      url: "#"
+    };
+
+    setBibliotecaDocs([newDoc, ...bibliotecaDocs]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
   
   // Compliance tracking (simulated DB)
   const [estado, setEstado] = useState<Record<string, string>>(() => {
@@ -23,7 +146,7 @@ export default function TitaniaApp() {
   const [messages, setMessages] = useState([
     {
       role: "assistant", 
-      content: `Hola. Soy TitanIA, el asistente de análisis regulatorio del **${PROJECT.nombre}**.\n\nHe procesado la Matriz de Compromisos Ambientales (MCA). De los 47 compromisos, detecto **8 brechas** entre los compromisos evaluados y los recogidos en la RCA. ¿En qué te puedo ayudar hoy?` 
+      content: `__WELCOME__`
     }
   ]);
   const [input, setInput] = useState("");
@@ -48,29 +171,28 @@ export default function TitaniaApp() {
       const promptContext = SYSTEM_PROMPT + "\n\nESTADO ACTUAL DE COMPROMISOS:\n" + 
         JSON.stringify(estado) + "\n\nMCA COMPLETA:\n" + JSON.stringify(MCA);
       
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
           system: promptContext,
           messages: newMessages.map(m => ({ role: m.role, content: m.content })),
         })
       });
       const data = await res.json();
-      const reply = data.content?.[0]?.text || "No se pudo procesar la respuesta.";
+      
+      if (!res.ok) {
+        throw new Error(data.error || "Error de conexión");
+      }
+      
+      const reply = data.text || "No se pudo procesar la respuesta.";
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
-    } catch (e) {
-      // Fallback for demo without real API key
-      setTimeout(() => {
-        setMessages(prev => [...prev, { 
-          role: "assistant", 
-          content: "Este es un entorno de demostración. La conexión con la API requiere configuración de variables de entorno, pero puedo confirmar que he registrado tu consulta sobre la matriz ambiental." 
-        }]);
-        setLoading(false);
-      }, 1500);
-      return;
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Error desconocido";
+      setMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: `Hmm, hubo un problema al conectarme al motor de razonamiento: ${errorMessage}` 
+      }]);
     }
     setLoading(false);
     inputRef.current?.focus();
@@ -96,135 +218,503 @@ export default function TitaniaApp() {
     incumplidos: filtrado.filter(c => estado[c.id] === "Incumplido").length,
   };
 
-  // ── RENDER ──
-  return (
-    <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-800 overflow-hidden">
-      
-      {/* ── LEFT SIDEBAR (BRANDING & NAV) ── */}
-      <nav className="w-[18rem] flex-shrink-0 bg-[#2c4c3b] relative flex flex-col text-white z-10 shadow-xl overflow-hidden">
-        {/* Subtle background pattern/texture */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay">
-          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="circuit" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M0 20 h40 M20 0 v40" stroke="#ffffff" strokeWidth="1" fill="none" opacity="0.3"/>
-                <circle cx="20" cy="20" r="2" fill="#ffffff" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#circuit)" />
-          </svg>
-          {/* Faint green glow */}
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#8ebc9b] rounded-full blur-[100px] opacity-20"></div>
+  // ── AUTH RENDERING ──
+  if (!isAuthChecked) return null;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="relative flex flex-col items-center justify-center min-h-[100dvh] overflow-hidden font-sans">
+        {/* Full-bleed background image */}
+        <div className="absolute inset-0">
+          <img 
+            src="/fotos/IA-5.png" 
+            alt="background" 
+            className="w-full h-full object-cover object-center"
+          />
+          {/* Light overlay to improve text contrast */}
+          <div className="absolute inset-0 bg-white/10" />
         </div>
 
-        <div className="relative z-10 flex flex-col h-full p-6">
-          {/* Logo Top (optional, following the mockup where logo is at bottom) */}
-          <div className="flex items-center gap-3 mb-10 opacity-0">...</div>
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center gap-10 px-6 w-full">
           
-          {/* Search Bar */}
-          <div className="relative mb-10">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-800" />
-            <input 
-              type="text" 
-              placeholder="Buscar" 
-              className="w-full bg-white rounded-full py-2.5 pl-12 pr-4 text-sm text-slate-800 placeholder-slate-400 font-medium border-0 focus:ring-2 focus:ring-[#8ebc9b] transition-all"
+          {/* Logo */}
+          <div className="flex flex-col items-center gap-3">
+            <img 
+              src="/fotos/logo-completoi.png" 
+              alt="Titania" 
+              className="h-28 md:h-36 w-auto drop-shadow-2xl"
+              style={{ filter: "drop-shadow(0 4px 24px rgba(0,0,0,0.18))" }}
             />
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex flex-col gap-5 flex-1 pl-2">
-            <button className="flex items-center gap-4 text-white hover:text-[#8ebc9b] transition-colors font-medium text-sm text-left group">
-              <MessageSquare className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              TitanIA Chat
-            </button>
-            <button className="flex items-center gap-4 text-white hover:text-[#8ebc9b] transition-colors font-medium text-sm text-left group">
-              <Folder className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              Ver Mis Proyectos
-            </button>
-            <button className="flex items-center gap-4 text-white hover:text-[#8ebc9b] transition-colors font-medium text-sm text-left group">
-              <Settings className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              Configuración
+          {/* Login form — horizontal layout like the reference */}
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (passwordInput === "DemoTitania1122!") {
+                localStorage.setItem('titania_auth', 'true');
+                setIsAuthenticated(true);
+                setPasswordError(false);
+                setShowWelcome(true);
+              } else {
+                setPasswordError(true);
+                setPasswordInput("");
+              }
+            }}
+            className="flex flex-col items-center gap-3 w-full max-w-xl"
+          >
+            <div className="flex w-full shadow-xl">
+              {/* Password label+input */}
+              <div className="flex flex-1 bg-white/90 backdrop-blur-sm">
+                <span className="flex items-center pl-5 pr-3 text-xs font-bold tracking-widest text-slate-500 uppercase whitespace-nowrap select-none">
+                  Contraseña:
+                </span>
+                <input 
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  autoFocus
+                  className="flex-1 bg-transparent py-4 pr-4 text-slate-800 text-sm focus:outline-none placeholder-slate-300"
+                  placeholder="••••••••••••"
+                />
+              </div>
+              {/* Submit button */}
+              <button 
+                type="submit"
+                className="px-7 py-4 bg-[#5a9e6f] hover:bg-[#4a8a5f] active:bg-[#3a7a4f] text-white text-sm font-bold tracking-widest uppercase transition-colors whitespace-nowrap"
+              >
+                Ingresar &gt;
+              </button>
+            </div>
+
+            {/* Error message */}
+            {passwordError && (
+              <p className="text-red-200 text-xs font-semibold tracking-wide drop-shadow">
+                Contraseña incorrecta. Intenta de nuevo.
+              </p>
+            )}
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // ── RENDER ──
+  return (
+    <>
+    <div className={`flex flex-col md:flex-row h-[100dvh] w-full bg-[#f8fafc] font-sans text-slate-800 overflow-hidden relative ${isGeneratingPdf || pdfReportData ? 'print:hidden' : ''}`}>
+
+      {/* ── WELCOME POPUP ── */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(26,47,36,0.65)' }}>
+          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl">
+
+            {/* Background image inside modal */}
+            <div className="absolute inset-0">
+              <img src="/fotos/fondo_panel.png" alt="" className="w-full h-full object-cover object-center" />
+              <div className="absolute inset-0 bg-[#0e1f17]/80" />
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 px-8 py-10">
+
+              {/* Header */}
+              <div className="flex items-center gap-4 mb-7 border-b border-white/10 pb-6">
+                <img src="/fotos/logo-completoi.png" alt="Titania" className="h-12 w-auto opacity-90" />
+                <div>
+                  <h2 className="text-white text-xl font-bold tracking-wide">Bienvenido a Titania Sync</h2>
+                  <p className="text-emerald-400 text-xs font-semibold tracking-widest uppercase mt-0.5">Versión Demo</p>
+                </div>
+              </div>
+
+              {/* Body */}
+              <p className="text-white/80 text-sm leading-relaxed mb-6">
+                Estás explorando una versión demostrativa de <span className="text-white font-semibold">Titania Sync</span>, la plataforma de Titania para el monitoreo y gestión de compromisos ambientales.
+              </p>
+
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
+                <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-widest mb-1">Proyecto en demo</p>
+                <p className="text-white font-semibold text-sm mb-1">Proyecto Inmobiliario</p>
+                <p className="text-white/65 text-xs leading-relaxed">
+                  Iniciativa inmobiliaria evaluada mediante Declaración de Impacto Ambiental, con RCA vigente (N°202510001198) que establece <span className="text-white font-semibold">47 compromisos ambientales</span> distribuidos en tres fases: Preconstrucción, Construcción y Operación.
+                </p>
+              </div>
+
+              <div className="mb-7">
+                <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-widest mb-3">Funcionalidades disponibles</p>
+                <ul className="flex flex-col gap-2">
+                  {[
+                    'Visualización y seguimiento de la Matriz de Compromisos Ambientales',
+                    'Detección automática de brechas entre la MCA y la RCA',
+                    'Biblioteca documental del expediente SEIA',
+                    'Asistente IA para consultas en lenguaje natural',
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-white/75 text-xs">
+                      <span className="mt-0.5 w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center flex-shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 block" />
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <p className="text-white text-[12px] font-medium mb-7 tracking-wide drop-shadow-md bg-white/10 p-2 rounded inline-block">
+                Esta demostración contiene información ficticia.
+              </p>
+
+              <button
+                onClick={() => { setShowWelcome(false); setTourStep(1); }}
+                className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm tracking-widest uppercase rounded-xl transition-colors shadow-lg"
+              >
+                Explorar la plataforma
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* ── ONBOARDING TOUR ── */}
+      {tourStep > 0 && (
+        <div className="fixed inset-0 z-[90] pointer-events-none">
+          {/* Dimmed backdrop - clickable to skip */}
+          <div
+            className="absolute inset-0 bg-black/40 pointer-events-auto"
+            onClick={() => setTourStep(0)}
+          />
+
+          {/* STEP 1: Sidebar */}
+          {tourStep === 1 && (
+            <div className="absolute pointer-events-auto"
+              style={{ top: '5rem', left: 'calc(18rem + 16px)' }}>
+              {/* Arrow left */}
+              <div className="absolute -left-2.5 top-5 w-0 h-0"
+                style={{ borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid #1a2f24' }} />
+              <div className="bg-[#1a2f24] border border-emerald-800/50 rounded-xl shadow-2xl p-5 w-72">
+                <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-1">1 / 3</p>
+                <h3 className="text-white font-bold text-sm mb-2">Panel de Navegación</h3>
+                <p className="text-white/70 text-xs leading-relaxed mb-4">
+                  Desde aquí accedes a tus proyectos y a la biblioteca documental del expediente SEIA.
+                  Usa el botón superior para ocultar o expandir el panel.
+                </p>
+                <div className="flex items-center justify-between">
+                  <button onClick={() => setTourStep(0)} className="text-white/30 text-xs hover:text-white/60 transition-colors">Saltar tour</button>
+                  <button
+                    onClick={() => setTourStep(2)}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors"
+                  >Entendido →</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 2: Chat / TitanIA */}
+          {tourStep === 2 && (
+            <div className="absolute pointer-events-auto"
+              style={{ top: '5rem', left: '50%', transform: 'translateX(-50%)' }}>
+              {/* Arrow up */}
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-0 h-0"
+                style={{ borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '10px solid #1a2f24' }} />
+              <div className="bg-[#1a2f24] border border-emerald-800/50 rounded-xl shadow-2xl p-5 w-72">
+                <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-1">2 / 3</p>
+                <h3 className="text-white font-bold text-sm mb-2">Asistente TitanIA</h3>
+                <p className="text-white/70 text-xs leading-relaxed mb-4">
+                  Consulta en lenguaje natural sobre compromisos, brechas, documentos del expediente
+                  y cualquier aspecto del proyecto. TitanIA tiene el contexto documental completo del proyecto.
+                </p>
+                <div className="flex items-center justify-between">
+                  <button onClick={() => setTourStep(0)} className="text-white/30 text-xs hover:text-white/60 transition-colors">Saltar tour</button>
+                  <button
+                    onClick={() => setTourStep(3)}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors"
+                  >Entendido →</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: Dashboard */}
+          {tourStep === 3 && (
+            <div className="absolute pointer-events-auto"
+              style={{ top: '5rem', right: '2rem' }}>
+              {/* Arrow right */}
+              <div className="absolute -right-2.5 top-5 w-0 h-0"
+                style={{ borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderLeft: '10px solid #1a2f24' }} />
+              <div className="bg-[#1a2f24] border border-emerald-800/50 rounded-xl shadow-2xl p-5 w-72">
+                <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-1">3 / 3</p>
+                <h3 className="text-white font-bold text-sm mb-2">Dashboard MCA & Biblioteca</h3>
+                <p className="text-white/70 text-xs leading-relaxed mb-4">
+                  Visualiza la Matriz de Compromisos Ambientales, filtra por fase, revisa el estado
+                  de cumplimiento por compromiso y accede a la biblioteca documental completa.
+                </p>
+                <div className="flex items-center justify-between">
+                  <button onClick={() => setTourStep(0)} className="text-white/30 text-xs hover:text-white/60 transition-colors">Saltar tour</button>
+                  <button
+                    onClick={() => setTourStep(0)}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors"
+                  >¡Listo!</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── MOBILE HEADER ── */}
+      <div className="md:hidden flex-shrink-0 flex items-center justify-between bg-[#2c4c3b] p-4 text-white z-20 shadow-md">
+        <button onClick={() => setShowMobileSidebar(true)} className="p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors">
+          <Menu className="w-6 h-6" />
+        </button>
+        <span className="font-bold tracking-[0.2em] uppercase text-sm">Titania</span>
+        <button onClick={() => setShowMobileChat(true)} className="p-2 -mr-2 hover:bg-white/10 rounded-lg transition-colors relative">
+          <MessageSquare className="w-6 h-6" />
+          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#8ebc9b] rounded-full border-2 border-[#2c4c3b]"></span>
+        </button>
+      </div>
+
+      {/* ── MOBILE SIDEBAR OVERLAY ── */}
+      {showMobileSidebar && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-30 md:hidden backdrop-blur-sm" 
+          onClick={() => setShowMobileSidebar(false)} 
+        />
+      )}
+
+
+      {/* ── LEFT SIDEBAR (BRANDING & NAV) ── */}
+      <nav className={`${isSidebarCollapsed ? 'md:w-10' : 'md:w-[18rem]'} flex-shrink-0 flex-col text-white z-40 shadow-2xl overflow-hidden transition-all duration-300 md:order-1 md:relative md:flex md:translate-x-0 ${
+        showMobileSidebar ? "fixed inset-y-0 left-0 w-[18rem] flex translate-x-0" : "fixed inset-y-0 left-0 w-[18rem] flex -translate-x-full"
+      }`}>
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img src="/fotos/fondo_panel.png" alt="" className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 bg-black/50" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col h-full p-4">
+
+          {/* Top Header: Logo + Toggle button */}
+          <div className={`flex items-center mb-6 pl-1 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+            {!isSidebarCollapsed && (
+              <div className="opacity-90 cursor-pointer pt-2">
+                <img 
+                  src="/fotos/logo-completoi.png" 
+                  alt="Titania Logo" 
+                  className="w-14 md:w-16 h-auto drop-shadow-md" 
+                />
+              </div>
+            )}
+            <button
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="hidden md:flex p-1.5 rounded-lg bg-white/10 hover:bg-white/25 text-white transition-all duration-200"
+              title={isSidebarCollapsed ? 'Expandir panel' : 'Ocultar panel'}
+            >
+              <Menu className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Logo Bottom */}
-          <div className="mt-auto flex flex-col items-center justify-center opacity-90 border-t border-emerald-800/50 pt-8 pb-4">
-            {/* 3D-like Cube Logo Representation */}
-            <div className="relative w-14 h-16 mb-4 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
-                <polygon points="50,10 90,30 50,55 10,30" fill="#f0fdff" />
-                <polygon points="10,30 50,55 50,95 10,75" fill="#e2f5f6" />
-                <polygon points="90,30 90,75 50,95 50,55" fill="#c4eff1" />
-                {/* Y Shape Inner cut */}
-                <polyline points="25,40 50,55 50,85" stroke="#ffffff" strokeWidth="4" fill="none" className="opacity-50" />
-                <polyline points="75,40 50,55" stroke="#ffffff" strokeWidth="4" fill="none" className="opacity-50" />
-              </svg>
+          {!isSidebarCollapsed && (<>
+
+            {/* Search Bar */}
+            <div className="relative mb-8">
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Buscar"
+                className="w-full bg-white/90 backdrop-blur-sm rounded-full py-2.5 pl-5 pr-10 text-sm text-slate-700 placeholder-slate-400 font-medium border-0 focus:ring-2 focus:ring-white/60 focus:outline-none transition-all"
+              />
             </div>
-            <span className="text-2xl font-bold tracking-[0.3em] font-sans text-white uppercase ml-2">
-              Titania
-            </span>
-          </div>
+
+            {/* Navigation Links */}
+            <div className="flex flex-col gap-5 pl-1">
+              <div>
+                <button
+                  onClick={() => setIsProjectsOpen(!isProjectsOpen)}
+                  className="w-full flex items-center justify-between text-white hover:text-emerald-300 transition-colors font-medium text-sm text-left group"
+                >
+                  <div className="flex items-center gap-4">
+                    <Folder className="w-5 h-5 group-hover:scale-110 transition-transform opacity-90" />
+                    Ver Mis Proyectos
+                  </div>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isProjectsOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isProjectsOpen && (
+                  <div className="ml-9 mt-4 flex flex-col gap-3 border-l border-white/20 pl-4 animate-fade-up">
+                    <div className="text-white/50 text-[10px] uppercase tracking-wider font-bold">Proyecto Inmobiliario (DEMO)</div>
+                    <button
+                      onClick={() => setActiveTab('mca')}
+                      className={`text-left text-xs transition-colors ${activeTab !== 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                    >
+                      › Dashboard MCA
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('biblioteca')}
+                      className={`text-left text-xs transition-colors ${activeTab === 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                    >
+                      › Biblioteca de Documentos
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <button className="flex items-center gap-4 text-white hover:text-emerald-300 transition-colors font-medium text-sm text-left group">
+                <Settings className="w-5 h-5 group-hover:scale-110 transition-transform opacity-90" />
+                Configuración
+              </button>
+            </div>
+
+            {/* Spacer to push user info to the bottom */}
+            <div className="flex-1"></div>
+
+            {/* Bottom user */}
+            <div className="border-t border-white/15 pt-4 pb-1">
+              <div className="flex items-center gap-3 px-1">
+                <div className="w-9 h-9 rounded-full bg-white/20 border border-white/30 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                  AR
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-white text-sm font-semibold truncate">Alberto Ruiz</span>
+                  <span className="text-white/50 text-[10px] truncate">Administrador</span>
+                </div>
+              </div>
+            </div>
+
+          </>)}
         </div>
       </nav>
 
-      {/* ── CENTER PANEL (MAIN DASHBOARD) ── */}
-      <main className="flex-1 flex flex-col min-w-0 bg-white border-r border-slate-200 shadow-sm z-0">
+      {/* ── RIGHT PANEL (MAIN DASHBOARD) ── */}
+      <main className="flex-1 flex flex-col min-w-0 bg-white border-l border-slate-200 shadow-sm z-0 overflow-hidden md:order-3">
         
         {/* Header Title */}
-        <div className="pt-10 px-10 pb-6">
-          <h1 className="text-xl md:text-2xl font-bold text-slate-800 tracking-wide uppercase mb-8">
-            Detalle de Permisos y Fuentes Normativas
+        <div className="pt-6 md:pt-10 px-4 md:px-10 pb-4 md:pb-6 flex-shrink-0">
+          <h1 className="text-xl md:text-2xl font-bold text-slate-800 tracking-wide uppercase mb-4 md:mb-8">
+            {activeTab === 'biblioteca' ? 'Biblioteca Documental (SEIA)' : 'Detalle de Compromisos y Fuente Documental'}
           </h1>
           
           {/* Project Selector / Subtitle */}
           <div className="flex items-center gap-3 text-emerald-600 font-semibold text-lg pb-4 border-b border-slate-100">
             <ChevronDown className="w-6 h-6" />
-            Proyecto de Inversión {PROJECT.nombre}
+            Iniciativa de Inversión {PROJECT.nombre}
           </div>
         </div>
 
-        {/* Action Tabs & Filters (Minimalist approach to match the clean UI) */}
-        <div className="px-10 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex gap-6 border-b border-slate-200">
-            {[
-              { id: "mca", label: "Todos los Permisos", icon: FileText },
-              { id: "brechas", label: "Brechas Detectadas", icon: ShieldAlert },
-              { id: "reporte", label: "Estado & Reportes", icon: Activity }
-            ].map(tab => (
-              <button 
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`pb-3 flex items-center gap-2 text-sm font-semibold transition-all border-b-2 
-                  ${activeTab === tab.id ? 'border-[#8ebc9b] text-[#8ebc9b]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-              >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          
-          {/* Fase Filter Pills */}
-          {activeTab !== "reporte" && (
-            <div className="flex bg-slate-50 p-1 rounded-full border border-slate-200">
-              {["Todas", ...FASES].map(f => (
+        {activeTab === 'biblioteca' ? (
+            <div className="px-4 md:px-10 pb-12 flex-1 flex flex-col animate-fade-up min-h-0">
+              {/* Toolbar */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 shrink-0">
+                <div className="relative w-full sm:max-w-md">
+                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                   <input 
+                     type="text" 
+                     placeholder="Buscar en el expediente SEIA..." 
+                     className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-[#8ebc9b] transition-all"
+                   />
+                </div>
                 <button 
-                  key={f}
-                  onClick={() => setFaseFilter(f)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                    faseFilter === f 
-                    ? 'bg-white text-emerald-700 shadow-sm border border-emerald-100' 
-                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border border-transparent'
-                  }`}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="whitespace-nowrap w-full sm:w-auto px-6 py-2.5 bg-[#2c4c3b] hover:bg-[#1a2f24] text-white font-bold text-sm rounded-lg transition-colors flex justify-center items-center gap-2 shadow-sm cursor-pointer"
                 >
-                  {f}
+                  <UploadCloud className="w-4 h-4" /> Cargar Documento
+                </button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileUpload}
+                  className="hidden" 
+                  accept=".pdf,.doc,.docx" 
+                />
+              </div>
+
+              {/* Document List */}
+              <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm flex-1 flex flex-col min-h-0">
+                <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-200 p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider shrink-0">
+                  <div className="col-span-2 sm:col-span-1 text-center">Tipo</div>
+                  <div className="col-span-10 sm:col-span-5 pl-2">Documento del Expediente</div>
+                  <div className="hidden sm:flex col-span-2">Autor / OAECA</div>
+                  <div className="hidden sm:flex col-span-2">Estado</div>
+                  <div className="hidden sm:flex col-span-2 text-right justify-end">Fecha</div>
+                </div>
+                <div className="divide-y divide-slate-100 overflow-y-auto flex-1">
+                  {bibliotecaDocs.map(doc => (
+                    <div key={doc.id} onClick={() => doc.url !== "#" && window.open(doc.url, "_blank")} className={`grid grid-cols-12 items-center p-4 hover:bg-slate-50 transition-colors group ${doc.url !== "#" ? 'cursor-pointer' : ''}`}>
+                      <div className="col-span-2 sm:col-span-1 flex justify-center">
+                        <div className={`px-2 py-1 rounded text-[10px] font-black tracking-widest text-center ${
+                          doc.tipo === 'RCA' || doc.tipo === 'ICE' ? 'bg-emerald-100 text-emerald-800' : 
+                          doc.tipo.includes('Adenda') || doc.tipo === 'DIA' ? 'bg-blue-100 text-blue-800' :
+                          doc.tipo === 'ICSARA' ? 'bg-amber-100 text-amber-800' :
+                          'bg-slate-200 text-slate-600'
+                        }`}>
+                          {doc.tipo}
+                        </div>
+                      </div>
+                      <div className="col-span-10 sm:col-span-5 flex flex-col pr-4 pl-2 sm:pl-4">
+                        <span className="text-sm font-semibold text-slate-800 group-hover:text-[#518b62] transition-colors">{doc.titulo}</span>
+                        <span className="text-[11px] text-slate-400 truncate mt-0.5">{doc.file}</span>
+                      </div>
+                      <div className="hidden sm:flex col-span-2">
+                        <span className="text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">{doc.autor}</span>
+                      </div>
+                      <div className="hidden sm:flex col-span-2 items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                        <span className="text-[11px] font-medium text-slate-500 line-clamp-2">{doc.estado}</span>
+                      </div>
+                      <div className="hidden sm:flex col-span-2 text-right justify-end text-[11px] font-medium text-slate-400">
+                        {doc.fecha}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+        ) : (
+          <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+          {/* Action Tabs & Filters */}
+          <div className="px-4 md:px-6 pb-2 md:pb-4 flex flex-col gap-2">
+            {/* Main Tabs Row */}
+            <div className="flex gap-3 md:gap-5 border-b border-slate-200 overflow-x-auto scrollbar-hide w-full">
+              {[
+                { id: "mca", label: "Compromisos", icon: FileText },
+                { id: "brechas", label: "Brechas", icon: AlertTriangle },
+                { id: "reporte", label: "Estado & Reportes", icon: Activity },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`pb-3 flex items-center gap-1.5 text-xs font-semibold transition-all border-b-2 whitespace-nowrap flex-shrink-0
+                    ${activeTab === tab.id ? 'border-[#8ebc9b] text-[#8ebc9b]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                >
+                  <tab.icon className="w-3.5 h-3.5" />
+                  {tab.label}
                 </button>
               ))}
             </div>
-          )}
-        </div>
+
+            {/* Fase Filter Pills Row */}
+            {activeTab !== "reporte" && (
+              <div className="flex bg-slate-50 p-1 rounded-full border border-slate-200 overflow-x-auto scrollbar-hide whitespace-nowrap w-full">
+                {["Todas", ...FASES].map(f => (
+                  <button 
+                    key={f}
+                    onClick={() => setFaseFilter(f)}
+                    className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all flex-shrink-0 ${
+                      faseFilter === f 
+                      ? 'bg-white text-emerald-700 shadow-sm border border-emerald-100' 
+                      : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border border-transparent'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto px-10 pb-12">
+        <div className="flex-1 overflow-y-auto px-4 md:px-10 pb-16 md:pb-12 scroll-smooth">
           
           {activeTab !== "reporte" ? (
             <div className="flex flex-col gap-6">
@@ -292,8 +782,8 @@ export default function TitaniaApp() {
                         {/* Status/Origen Block */}
                         <div className="flex flex-col gap-2 w-full lg:w-48 flex-shrink-0">
                           <div className="bg-[#518b62] text-white text-xs font-medium px-4 py-3 rounded-md shadow-sm">
-                            <div className="uppercase tracking-wider text-[10px] text-emerald-100 mb-1 opacity-80">Fuente normativa</div>
-                            <div>{c.origen} {c.rca_art !== "—" ? `→ ${c.rca_art}` : ""}</div>
+                            <div className="uppercase tracking-wider text-[10px] text-emerald-100 mb-1 opacity-80">Fuente documental</div>
+                            <div>{c.origen} {c.rca_art !== "—" ? `→ RCA ${c.rca_art.replace('RCA', '').trim()}` : ""}</div>
                           </div>
                           
                           <div className="bg-slate-50 border border-slate-100 text-xs text-slate-600 px-4 py-2.5 rounded-md">
@@ -302,27 +792,27 @@ export default function TitaniaApp() {
                           </div>
                         </div>
 
-                        {/* Metadata Data Grid */}
-                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600">
-                          <div className="flex justify-between border-b border-slate-200/60 pb-2">
-                            <span className="text-slate-400">Organismo</span>
-                            <span className="font-semibold text-slate-800 text-right">{c.organismo}</span>
+                        {/* Metadata Data Grid (Responsive Fix) */}
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600">
+                          <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
+                            <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Organismo</span>
+                            <span className="font-semibold text-slate-800 break-words">{c.organismo}</span>
                           </div>
-                          <div className="flex justify-between border-b border-slate-200/60 pb-2">
-                            <span className="text-slate-400">Responsable</span>
-                            <span className="font-semibold text-slate-800 text-right">{c.responsable.split('—')[0].trim()}</span>
+                          <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
+                            <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Responsable</span>
+                            <span className="font-semibold text-slate-800 break-words">{c.responsable.split('—')[0].trim()}</span>
                           </div>
-                          <div className="flex justify-between border-b border-slate-200/60 pb-2">
-                            <span className="text-slate-400">Tipo de compromiso</span>
-                            <span className="font-semibold text-slate-800 text-right">{c.tipo}</span>
+                          <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
+                            <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Tipo de compromiso</span>
+                            <span className="font-semibold text-slate-800 break-words">{c.tipo}</span>
                           </div>
-                          <div className="flex justify-between border-b border-slate-200/60 pb-2">
-                            <span className="text-slate-400">Frecuencia / Plazo</span>
-                            <span className="font-semibold text-slate-800 text-right">{c.frecuencia.split('(')[0]}</span>
+                          <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
+                            <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Frecuencia / Plazo</span>
+                            <span className="font-semibold text-slate-800 break-words">{c.frecuencia.split('(')[0]}</span>
                           </div>
-                          <div className="flex justify-between col-span-1 sm:col-span-2 pt-1">
-                            <span className="text-slate-400">Indicador</span>
-                            <span className="font-medium text-slate-700 text-right max-w-md">{c.indicador}</span>
+                          <div className="flex flex-col col-span-1 md:col-span-2 pt-1 gap-1.5 min-w-0">
+                            <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Indicador</span>
+                            <span className="font-medium text-slate-700 break-words">{c.indicador}</span>
                           </div>
                         </div>
                       </div>
@@ -382,7 +872,7 @@ export default function TitaniaApp() {
             <div className="max-w-2xl mx-auto flex flex-col gap-8 animate-fade-up">
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-3">
-                  <Activity className="text-emerald-600" /> Stats de Cumplimiento Ambiental
+                  <Activity className="text-emerald-600" /> Estadísticas de Cumplimiento Ambiental
                 </h3>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -416,31 +906,125 @@ export default function TitaniaApp() {
                 <div className="text-center mt-4 text-sm font-bold text-slate-600">
                   {Math.round((stats.cumplidos/stats.total)*100) || 0}% de Tasa de Cumplimiento
                 </div>
+
+                <div className="mt-8 border-t border-slate-100 pt-6">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Desglose por Fase de Evaluación</div>
+                  <div className="flex flex-col gap-4">
+                    {FASES.map(fase => {
+                      const faseTotal = filtrado.filter(c => c.fase === fase).length;
+                      if (!faseTotal) return null;
+                      const faseCumplidos = filtrado.filter(c => c.fase === fase && estado[c.id] === "Cumplido").length;
+                      const pct = Math.round((faseCumplidos/faseTotal)*100);
+                      return (
+                        <div key={fase} className="flex flex-col gap-1.5 mt-1">
+                          <div className="flex justify-between text-xs items-center">
+                            <span className="font-semibold text-slate-600">{fase}</span>
+                            <span className="font-bold text-slate-700">{pct}% <span className="font-medium text-slate-400 ml-1">({faseCumplidos}/{faseTotal})</span></span>
+                          </div>
+                          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div style={{ width: `${pct}%` }} className="bg-[#8ebc9b] h-full transition-all"></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
                 
-                <button className="mt-8 w-full py-4 bg-[#8ebc9b] hover:bg-[#7ba3a0] text-white rounded-lg font-bold transition-colors shadow-sm flex items-center justify-center gap-2">
+                <button onClick={() => requestPdfReport('consolidado')} className="mt-8 w-full py-4 bg-[#8ebc9b] hover:bg-[#7ba3a0] text-white rounded-lg font-bold transition-colors shadow-sm flex items-center justify-center gap-2">
                   <FileText className="w-5 h-5" /> 
                   Exportar Informe PDF Consolidado
+                </button>
+              </div>
+
+              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
+                <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-3">
+                  <ShieldAlert className="text-rose-600" /> Panel de Reporte de Brechas
+                </h3>
+                
+                <div className="flex flex-col gap-4 mb-8">
+                  <div className="p-4 bg-rose-50 border border-rose-100 rounded-lg flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-bold text-rose-800">Total de Brechas Detectadas</div>
+                      <div className="text-xs text-rose-600 mt-1">Diferencias entre MCA y RCA</div>
+                    </div>
+                    <div className="text-2xl font-black text-rose-700">{MCA.filter(c => c.brecha).length}</div>
+                  </div>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Las brechas detectadas corresponden a inconsistencias entre los compromisos evaluados durante el proceso (DIA, Adendas, ICSARA) y los que finalmente quedaron establecidos en la Resolución de Calificación Ambiental (RCA).
+                  </p>
+                </div>
+                
+                <button 
+                  onClick={() => requestPdfReport('brechas')} 
+                  className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold transition-colors shadow-sm flex items-center justify-center gap-2"
+                >
+                  <FileText className="w-5 h-5" /> 
+                  Exportar Reporte de Brechas (PDF)
                 </button>
               </div>
             </div>
           )}
         </div>
-      </main>
+      </div>
+      )}
+    </main>
 
-      {/* ── RIGHT CHAT PANEL (ASSISTANT) ── */}
-      <aside className="w-[20rem] xl:w-[26rem] flex-shrink-0 bg-white border-l border-slate-200 flex flex-col relative shadow-[-4px_0_20px_rgba(0,0,0,0.02)] z-10">
+      {/* ── RESPONSIVE CHAT OVERLAY ── */}
+      {showMobileChat && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-30 md:hidden backdrop-blur-sm transition-opacity" 
+          onClick={() => setShowMobileChat(false)} 
+        />
+      )}
+
+      {/* ── LEFT-MIDDLE CHAT PANEL (ASSISTANT) ── */}
+      <aside className={`w-[85vw] max-w-[400px] flex-shrink-0 bg-white border-r border-slate-200 flex-col shadow-2xl z-40 transition-transform duration-300 md:order-2 md:relative md:flex md:flex-1 md:max-w-none md:translate-x-0 ${
+        showMobileChat ? "fixed inset-y-0 right-0 flex translate-x-0" : "fixed inset-y-0 right-0 flex translate-x-full"
+      }`}>
         
         {/* Chat Header */}
-        <div className="py-6 px-6 border-b border-slate-100">
-          <h2 className="text-[1.1rem] font-medium text-slate-400 tracking-wider">
-            Chat Asistente Titan<span className="font-black text-[#518b62]">IA</span><span className="text-[#8ebc9b] ml-1">⋮</span>
+        <div className="py-6 px-6 border-b border-slate-100 flex items-center justify-center">
+          <h2 className="text-[1.1rem] font-medium text-slate-400 tracking-wider flex items-center">
+            Titania<span className="font-black text-[#518b62]">Sync</span>
           </h2>
+          <button onClick={() => setShowMobileChat(false)} className="md:hidden p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors">
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 scroll-smooth bg-slate-50/30">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-6 scroll-smooth bg-slate-50/30">
           {messages.map((m, i) => {
             const isUser = m.role === "user";
+
+            /* ── WELCOME MESSAGE (first message) ── */
+            if (i === 0 && m.content === '__WELCOME__') return (
+              <div key={0} className="self-start items-start flex flex-col max-w-[92%] animate-fade-up">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-black">T</div>
+                  <span className="text-[10px] font-bold text-emerald-700 tracking-wide uppercase">TitanIA</span>
+                </div>
+                <div className="bg-white text-slate-700 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm p-4 text-sm leading-relaxed">
+                  <p className="mb-3">Hola. Soy <strong className="font-bold text-emerald-800">TitanIA</strong>, el asistente de inteligencia artificial de <strong className="font-bold text-emerald-800">Titania Sync</strong>. Estoy aquí para ayudarte a navegar y analizar la información del <strong className="font-bold text-emerald-800">Proyecto Inmobiliario (DEMO)</strong>.</p>
+                  <p className="mb-2 text-slate-500 text-[11px] font-semibold uppercase tracking-wider">Puedo asistirte en:</p>
+                  <ul className="flex flex-col gap-1.5 mb-3">
+                    {[
+                      'Compromisos ambientales — consultar detalle, estado, fase y organismo responsable',
+                      'Brechas normativas — diferencias detectadas entre la MCA y la RCA',
+                      'Expediente SEIA — DIA, Adendas, ICSARA, ICE y RCA disponibles en Biblioteca',
+                      'Análisis regulatorio — artículos RCA, obligaciones por fase y avance general',
+                    ].map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-slate-600 text-xs">
+                        <span className="mt-1 w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-slate-400 text-xs">¿Por dónde quieres empezar?</p>
+                </div>
+              </div>
+            );
+
             return (
               <div key={i} className={`flex flex-col max-w-[90%] animate-fade-up ${isUser ? 'self-end items-end' : 'self-start items-start'}`}>
                 {/* Avatar */}
@@ -451,12 +1035,30 @@ export default function TitaniaApp() {
                   </div>
                 )}
                 {/* Bubble */}
-                <div className={`p-4 text-sm leading-relaxed whitespace-pre-wrap ${
+                <div className={`p-4 text-sm leading-relaxed ${
                   isUser 
-                  ? 'bg-slate-800 text-white rounded-2xl rounded-tr-sm shadow-sm' 
-                  : 'bg-white text-slate-600 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm'
+                  ? 'bg-slate-800 text-white rounded-2xl rounded-tr-sm shadow-sm whitespace-pre-wrap' 
+                  : 'bg-white text-slate-700 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm'
                 }`}>
-                  {m.content}
+                  {isUser ? (
+                    m.content
+                  ) : (
+                    <div className="markdown-prose">
+                      <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          strong: ({node, ...props}) => <strong className="font-bold text-emerald-800" {...props} />,
+                          p: ({node, ...props}) => <p className="mb-3 last:mb-0" {...props} />,
+                          table: ({node, ...props}) => <div className="overflow-x-auto my-4 rounded-lg border border-emerald-100"><table className="min-w-full divide-y divide-emerald-200 text-xs" {...props} /></div>,
+                          thead: ({node, ...props}) => <thead className="bg-emerald-50" {...props} />,
+                          th: ({node, ...props}) => <th className="px-3 py-2 text-left font-semibold text-emerald-800 uppercase tracking-wider" {...props} />,
+                          td: ({node, ...props}) => <td className="px-3 py-2 border-t border-emerald-100/50 text-slate-700" {...props} />,
+                        }}
+                      >
+                        {m.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -491,10 +1093,10 @@ export default function TitaniaApp() {
         )}
 
         {/* Chat Input Area */}
-        <div className="p-6 bg-white border-t border-slate-100">
-          <p className="text-xs text-slate-500 leading-relaxed mb-4 text-center px-4">
-            Ingresa los antecedentes técnicos de tu proyecto de inversión para avanzar.<br/><br/>
-            Si tienes alguna duda acerca de la información requerida, siempre puedes pedirme ayuda.
+        <div className="p-4 md:p-6 bg-white border-t border-slate-100">
+          <p className="hidden md:block text-xs text-slate-500 leading-relaxed mb-4 text-center px-4">
+            Si tienes alguna duda acerca de la información requerida, siempre puedes pedirme ayuda.<br/><br/>
+            Recuerda que los datos entregados son un ejercicio de demostración.
           </p>
           
           <div className="relative flex items-center">
@@ -525,5 +1127,104 @@ export default function TitaniaApp() {
       </aside>
 
     </div>
+
+      {/* ── ALERTS / MODALS ── */}
+      {isGeneratingPdf && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm print:hidden">
+          <div className="bg-white p-7 rounded-2xl shadow-2xl animate-fade-up w-[400px] max-w-[90vw]">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center relative overflow-hidden flex-shrink-0">
+                 <span className="text-emerald-700 font-bold text-lg relative z-10">T</span>
+                 <div className="absolute inset-0 bg-emerald-300/30 animate-pulse"></div>
+              </div>
+              <div>
+                <p className="font-bold text-slate-800 text-sm">TitanIA está procesando los compromisos...</p>
+                <p className="text-xs text-slate-500 mt-0.5">Redactando y maquetando el reporte. Un momento.</p>
+              </div>
+            </div>
+            
+            {/* Barra de progreso */}
+            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+              <div className="bg-emerald-500 h-full rounded-full relative overflow-hidden" style={{ animation: "fillBar 45s cubic-bezier(0.1, 0.8, 0.2, 1) forwards" }}>
+                <div className="absolute inset-0 bg-white/30" style={{ animation: "shimmerReflect 2s linear infinite" }}></div>
+              </div>
+            </div>
+            <div className="flex justify-between items-center text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-wider">
+              <span>Recopilando datos</span>
+              <span className="animate-pulse">Generando PDF</span>
+            </div>
+            
+            <style>{`
+              @keyframes fillBar {
+                0% { width: 0%; }
+                15% { width: 35%; }
+                40% { width: 65%; }
+                70% { width: 85%; }
+                100% { width: 95%; }
+              }
+              @keyframes shimmerReflect {
+                0% { transform: translateX(-100%) skewX(-20deg); }
+                100% { transform: translateX(200%) skewX(-20deg); }
+              }
+            `}</style>
+          </div>
+        </div>
+      )}
+
+      {/* ── ONSCREEN PRINTABLE PDF PREVIEW ── */}
+      {pdfReportData && (
+        <div className="hidden print:block bg-white text-black p-8 print-report w-full">
+           <div className="max-w-4xl mx-auto markdown-prose">
+             
+             {/* ── HEADER MEMBRETE ── */}
+             <div className="bg-[#1a2f24] rounded-t-xl p-8 mb-10 flex justify-between items-center border-b-8 border-[#518b62] print:break-inside-avoid shadow-sm print:shadow-none">
+               <div className="flex flex-col gap-2">
+                 <img src="/fotos/logo-completoi.png" alt="Titania Logo" className="w-36 h-auto drop-shadow-md" />
+                 <p className="text-[10px] font-bold text-[#8ebc9b] tracking-[0.2em] uppercase ml-1 mt-1">Sistema de Inteligencia Regulatoria</p>
+               </div>
+               <div className="text-right border-l border-[#518b62]/30 pl-6">
+                 <p className="text-[10px] uppercase tracking-widest font-bold text-[#8ebc9b] mb-1">Emisión Oficial</p>
+                 <p className="text-sm font-bold text-white">{new Date().toLocaleDateString('es-CL')}</p>
+                 <p className="text-[9px] text-[#8ebc9b]/70 font-mono mt-1 pt-1 border-t border-[#518b62]/30">DOCID: {Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
+               </div>
+             </div>
+             
+             <div className="prose prose-sm max-w-none">
+               <ReactMarkdown 
+                 remarkPlugins={[remarkGfm]}
+                 components={{
+                   h1: ({node, ...props}) => <h1 className="text-2xl font-black mb-6 mt-8 uppercase text-[#1a2f24] tracking-wide border-b border-[#518b62]/30 pb-3" {...props} />,
+                   h2: ({node, ...props}) => <h2 className="text-lg font-bold mb-4 mt-8 text-[#1a2f24] flex items-center gap-2 before:content-[''] before:inline-block before:w-1.5 before:h-5 before:bg-[#518b62] before:rounded-sm" {...props} />,
+                   h3: ({node, ...props}) => <h3 className="text-base font-bold mb-3 mt-6 text-[#1a2f24]" {...props} />,
+                   p: ({node, ...props}) => <p className="mb-4 text-[13px] leading-relaxed text-slate-700 text-justify" {...props} />,
+                   ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-5 text-[13px] text-slate-700 marker:text-[#518b62]" {...props} />,
+                   ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-5 text-[13px] text-slate-700 marker:font-bold marker:text-[#518b62]" {...props} />,
+                   li: ({node, ...props}) => <li className="mb-2 pl-1" {...props} />,
+                   strong: ({node, ...props}) => <strong className="font-bold text-[#1a2f24]" {...props} />,
+                   table: ({node, ...props}) => <table className="w-full text-left border-collapse text-[12px] my-6 border-t border-slate-200 print:break-inside-auto" {...props} />,
+                   tr: ({node, ...props}) => <tr className="print:break-inside-avoid print:break-after-auto" {...props} />,
+                   thead: ({node, ...props}) => <thead className="bg-[#f0f5f2] border-b-2 border-[#518b62] table-header-group" {...props} />,
+                   th: ({node, ...props}) => <th className="p-3 font-bold text-[#1a2f24]" {...props} />,
+                   td: ({node, ...props}) => <td className="p-3 border-b border-slate-100 text-slate-700 align-top" {...props} />
+                 }}
+               >
+                 {pdfReportData.content}
+               </ReactMarkdown>
+             </div>
+             
+             <div className="mt-16 pt-5 border-t border-slate-300 flex justify-between items-start">
+                <div>
+                  <div className="text-[10px] text-slate-400 font-medium">Generado por IA generativa (TitanIA).</div>
+                  <div className="text-[10px] text-slate-400 font-medium mt-1">La información debe ser verificada según las resoluciones publicadas en el SEIA.</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-[11px] text-[#1a2f24] uppercase tracking-wide">{PROJECT.nombre}</div>
+                  <div className="text-[10px] text-slate-400 mt-1">Región de Valparaíso — Quilpué</div>
+                </div>
+             </div>
+           </div>
+        </div>
+      )}
+    </>
   );
 }
