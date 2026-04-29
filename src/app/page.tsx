@@ -327,7 +327,7 @@ export default function TitaniaApp() {
                   }
                 } catch (error) {
                   console.error("Error validando el correo:", error);
-                  // En caso de caída de API, por seguridad no lo dejamos pasar (o si quisieras, podrías dejarlo pasar).
+                  // En caso de caída de API, por seguridad no lo dejamos pasar.
                   setUnregisteredError(true);
                 } finally {
                   setIsVerifying(false);
