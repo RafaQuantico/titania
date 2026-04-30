@@ -927,12 +927,12 @@ export default function TitaniaApp() {
                         <div
                           key={c.id}
                           onClick={() => setSelectedId(isSelected ? null : c.id)}
-                          className={`bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col sm:flex-row overflow-hidden hover:shadow-md transition-shadow cursor-pointer animate-fade-up ${isSelected ? 'ring-2 ring-emerald-100' : ''
+                          className={`bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col xl:flex-row overflow-hidden hover:shadow-md transition-shadow cursor-pointer animate-fade-up ${isSelected ? 'ring-2 ring-emerald-100' : ''
                             }`}
                           style={{ animationDelay: `${i * 0.03}s` }}
                         >
                           {/* Number block (Left accent) */}
-                          <div className="w-20 hidden sm:flex flex-col items-center pt-8 bg-emerald-50/50 border-r border-slate-50">
+                          <div className="w-20 hidden xl:flex flex-col items-center pt-8 bg-emerald-50/50 border-r border-slate-50">
                             <span className="text-[#8ebc9b] font-bold tracking-widest text-sm">
                               {c.id.replace('C-', '')}
                             </span>
@@ -944,6 +944,11 @@ export default function TitaniaApp() {
                             {/* Top Row: Title & Badges */}
                             <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-2 xl:hidden">
+                                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">
+                                    {c.id}
+                                  </span>
+                                </div>
                                 <h3 className="text-slate-800 font-bold text-sm leading-relaxed max-w-3xl pr-4">
                                   {c.texto}
                                 </h3>
