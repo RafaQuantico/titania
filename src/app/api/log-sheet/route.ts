@@ -34,21 +34,41 @@ export async function POST(req: Request) {
 
     // ── REGISTRAR INGRESO (log pasivo, no bloquea) ──
     if (tipoAccion === 'Ingreso') {
-      // Actualizar último ingreso (ignoramos errores silenciosamente)
+      // Primero, recuperamos los datos del usuario desde Supabase
+      let nombreSupabase = 'No provisto';
+      let institucionSupabase = 'No provista';
+      
       try {
+        const { data: usuario } = await supabase
+          .from('usuarios_demo')
+          .select('nombre, institucion')
+          .eq('correo', correo.toLowerCase().trim())
+          .single();
+          
+        if (usuario) {
+          nombreSupabase = usuario.nombre || 'No provisto';
+          institucionSupabase = usuario.institucion || 'No provista';
+        }
+
+        // Actualizamos el último ingreso en Supabase
         await supabase
           .from('usuarios_demo')
           .update({ ultimo_ingreso: new Date().toISOString() })
           .eq('correo', correo.toLowerCase().trim());
       } catch { /* ignorado */ }
 
-      // Log pasivo a Google Sheets (si falla, no importa)
+      // Log pasivo a Google Sheets (con todos los datos ya recuperados de Supabase)
       const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL;
       if (webhookUrl) {
         fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ tipoAccion: 'Ingreso', correo }),
+          body: JSON.stringify({ 
+            tipoAccion: 'Ingreso', 
+            correo,
+            nombre: nombreSupabase,
+            institucion: institucionSupabase
+          }),
         }).catch(() => {});
       }
 

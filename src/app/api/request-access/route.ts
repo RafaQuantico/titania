@@ -85,7 +85,7 @@ export async function POST(req: Request) {
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #334155;">
           <h2 style="color: #1a2f24;">¡Hola, ${name}!</h2>
           <p style="font-size: 16px; line-height: 1.5;">Has completado y enviado con éxito el formulario de solicitud para obtener la contraseña de la <strong>Demo de Titania Sync</strong>.</p>
-          <p style="font-size: 16px; line-height: 1.5;">Muy pronto recibirás una respuesta de nuestro equipo para darte acceso a la plataforma.</p>
+          <p style="font-size: 16px; line-height: 1.5;">En breves momentos recibirás las instrucciones para ingresar a la plataforma.</p>
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
           <p style="font-size: 12px; color: #94a3b8;">Este es un mensaje automático. Por favor no respondas a este correo.</p>
         </div>
