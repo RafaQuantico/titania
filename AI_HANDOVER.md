@@ -61,3 +61,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 | `src/app/api/request-access/route.ts` | Registro de nuevos usuarios + correos Hostinger |
 | `src/app/api/approve-user/route.ts` | Aprobación de usuarios con un clic desde el correo |
 | `src/lib/supabase.ts` | Cliente de Supabase compartido |
+
+---
+
+## Arquitectura UI y Responsividad
+- **Layout Fluido vs Breakpoints:** Debido a la interfaz de "paneles laterales" (el chat y la barra lateral pueden colapsarse o expandirse), las tarjetas de los dashboards **NO deben usar breakpoints fijos de grid** (`md:grid-cols-2` o `xl:grid-cols-4`). Los media queries estándar fallan porque miden la resolución total del monitor y no el ancho disponible del contenedor, provocando que el texto se aplaste en pantallas divididas.
+- **Solución Estándar:** Para estructuras de columnas en el dashboard, se debe utilizar siempre **Flexbox fluido con anchos mínimos**:
+  ```tsx
+  <div className="flex flex-wrap gap-4">
+    <div className="flex-1 min-w-[120px]">...</div>
+    <div className="flex-1 min-w-[120px]">...</div>
+  </div>
+  ```
+  Esto garantiza que las tarjetas se apilen mágicamente cuando no haya espacio físico, sin importar la resolución nativa de la pantalla del usuario.
+- **Vista Mobile Forzada:** Para la "Tarjeta de Compromisos", se fuerza el diseño estilo "mobile" (donde el ID se muestra como una pastilla en el título y todo es 1 columna) en todas las resoluciones medianas y grandes, reservando la vista "escritorio" (bloque verde a la izquierda) **solo para resoluciones ultra-anchas o sin chat abierto**, mitigando problemas de espacio.
