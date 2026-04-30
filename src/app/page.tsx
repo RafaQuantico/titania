@@ -927,29 +927,29 @@ export default function TitaniaApp() {
                         <div
                           key={c.id}
                           onClick={() => setSelectedId(isSelected ? null : c.id)}
-                          className={`bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col xl:flex-row overflow-hidden hover:shadow-md transition-shadow cursor-pointer animate-fade-up ${isSelected ? 'ring-2 ring-emerald-100' : ''
+                          className={`bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col md:flex-row overflow-hidden hover:shadow-md transition-shadow cursor-pointer animate-fade-up ${isSelected ? 'ring-2 ring-emerald-100' : ''
                             }`}
                           style={{ animationDelay: `${i * 0.03}s` }}
                         >
                           {/* Number block (Left accent) */}
-                          <div className="w-20 hidden xl:flex flex-col items-center pt-8 bg-emerald-50/50 border-r border-slate-50">
+                          <div className="w-20 hidden md:flex flex-col items-center pt-8 bg-emerald-50/50 border-r border-slate-50">
                             <span className="text-[#8ebc9b] font-bold tracking-widest text-sm">
                               {c.id.replace('C-', '')}
                             </span>
                           </div>
 
                           {/* Main content block */}
-                          <div className="flex-1 p-6 md:p-8 flex flex-col gap-6">
+                          <div className="flex-1 p-5 md:p-7 flex flex-col gap-6 min-w-0">
 
                             {/* Top Row: Title & Badges */}
-                            <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-4">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2 xl:hidden">
+                            <div className="flex flex-wrap items-start justify-between gap-4">
+                              <div className="flex-1 min-w-[200px]">
+                                <div className="flex items-center gap-2 mb-2 md:hidden">
                                   <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">
                                     {c.id}
                                   </span>
                                 </div>
-                                <h3 className="text-slate-800 font-bold text-sm leading-relaxed max-w-3xl pr-4">
+                                <h3 className="text-slate-800 font-bold text-sm leading-relaxed pr-4">
                                   {c.texto}
                                 </h3>
                               </div>
@@ -982,11 +982,11 @@ export default function TitaniaApp() {
                               </div>
                             </div>
 
-                            {/* Info Grid (Mimicking the table layout in the image) */}
-                            <div className="flex flex-wrap gap-6">
+                            {/* Info Grid (100% Fluid Layout) */}
+                            <div className="flex flex-wrap gap-4">
 
                               {/* Status/Origen Block */}
-                              <div className="flex flex-col gap-2 w-full xl:w-48 flex-shrink-0">
+                              <div className="flex flex-col gap-2 w-full sm:w-48 flex-shrink-0">
                                 <div className="bg-[#518b62] text-white text-xs font-medium px-4 py-3 rounded-md shadow-sm">
                                   <div className="uppercase tracking-wider text-[10px] text-emerald-100 mb-1 opacity-80">Fuente documental</div>
                                   <div>{c.origen} {c.rca_art !== "—" ? `→ RCA ${c.rca_art.replace('RCA', '').trim()}` : ""}</div>
@@ -998,25 +998,25 @@ export default function TitaniaApp() {
                                 </div>
                               </div>
 
-                              {/* Metadata Data Grid (Responsive Fix) */}
-                              <div className="flex-1 grid grid-cols-1 2xl:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600">
-                                <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
+                              {/* Metadata Data Grid (Fluid Flexbox) */}
+                              <div className="flex-1 flex flex-wrap gap-x-6 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 min-w-[260px] text-xs text-slate-600">
+                                <div className="flex-1 min-w-[120px] flex flex-col border-b border-slate-200/60 pb-2 gap-1.5">
                                   <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Organismo</span>
                                   <span className="font-semibold text-slate-800 break-words">{c.organismo}</span>
                                 </div>
-                                <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
+                                <div className="flex-1 min-w-[120px] flex flex-col border-b border-slate-200/60 pb-2 gap-1.5">
                                   <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Responsable</span>
                                   <span className="font-semibold text-slate-800 break-words">{c.responsable.split('—')[0].trim()}</span>
                                 </div>
-                                <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
+                                <div className="flex-1 min-w-[120px] flex flex-col border-b border-slate-200/60 pb-2 gap-1.5">
                                   <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Tipo de compromiso</span>
                                   <span className="font-semibold text-slate-800 break-words">{c.tipo}</span>
                                 </div>
-                                <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
+                                <div className="flex-1 min-w-[120px] flex flex-col border-b border-slate-200/60 pb-2 gap-1.5">
                                   <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Frecuencia / Plazo</span>
                                   <span className="font-semibold text-slate-800 break-words">{c.frecuencia.split('(')[0]}</span>
                                 </div>
-                                <div className="flex flex-col col-span-1 md:col-span-2 pt-1 gap-1.5 min-w-0">
+                                <div className="w-full flex flex-col pt-1 gap-1.5">
                                   <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Indicador</span>
                                   <span className="font-medium text-slate-700 break-words">{c.indicador}</span>
                                 </div>
