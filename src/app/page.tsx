@@ -994,7 +994,7 @@ export default function TitaniaApp() {
                               </div>
 
                               {/* Metadata Data Grid (Responsive Fix) */}
-                              <div className="flex-1 grid gap-x-8 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                              <div className="flex-1 grid grid-cols-1 2xl:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600">
                                 <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
                                   <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Organismo</span>
                                   <span className="font-semibold text-slate-800 break-words">{c.organismo}</span>
@@ -1075,7 +1075,7 @@ export default function TitaniaApp() {
                         <Activity className="text-emerald-600" /> Estadísticas de Cumplimiento Ambiental
                       </h3>
 
-                      <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
+                      <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4 mb-8">
                         <div className="bg-slate-50 border border-slate-100 rounded-lg p-4 text-center">
                           <div className="text-2xl font-black text-slate-700">{stats.total}</div>
                           <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">Total</div>

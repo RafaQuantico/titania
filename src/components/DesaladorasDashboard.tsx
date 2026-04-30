@@ -50,7 +50,7 @@ const ProyectosPanel = () => {
       <div className="text-xs text-slate-500 font-medium pb-2 border-b border-slate-200">
         {PROYECTOS.length} proyectos · corpus 89 documentos SEIA
       </div>
-      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
         {PROYECTOS.map(p => {
           const rs = riesgoStyle[p.riesgo as keyof typeof riesgoStyle];
           const isOpen = sel === p.id;
@@ -186,7 +186,7 @@ const PersistenciaPanel = () => {
         ))}
       </div>
       
-      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
         {datos.map((d, i) => {
           const isCritical = d.pct >= 70;
           const isWarning = d.pct >= 40 && d.pct < 70;
@@ -258,7 +258,7 @@ const BrecharPanel = () => {
               
               {isOpen && (
                 <div className="mt-4 pt-4 border-t border-slate-100 animate-fade-in flex flex-col gap-4">
-                  <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                  <div className="grid grid-cols-1 2xl:grid-cols-2 gap-3">
                     <div className="bg-red-50 border border-red-100/50 rounded-lg p-3">
                       <div className="text-[10px] text-red-800/60 uppercase tracking-wider font-bold mb-1">Impacto CAPEX</div>
                       <div className="text-xs font-bold text-red-600">{b.impacto_capex}</div>
@@ -359,7 +359,7 @@ const ReportesPanel = ({ requestPdfReport, isGeneratingPdf }: { requestPdfReport
           <Activity className="text-emerald-600 w-5 h-5" /> Estado del Portfolio de Desaladoras
         </h3>
 
-        <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
+        <div className="grid grid-cols-2 2xl:grid-cols-4 gap-4 mb-8">
           <div className="bg-slate-50 border border-slate-100 rounded-lg p-4 text-center">
             <div className="text-2xl font-black text-slate-700">{PROYECTOS.length}</div>
             <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">Total Proyectos</div>
@@ -490,7 +490,7 @@ export default function DesaladorasDashboard({
             89 documentos base <span className="opacity-50 mx-1">·</span> 18 proyectos <span className="opacity-50 mx-1">·</span> 6 jurisdicciones (2013–2026)
           </div>
           
-          <div className="grid gap-3 mt-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
+          <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-3 mt-6">
             {[
               { v: "89", l: "Docs. Corpus", c: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
               { v: "18", l: "Proyectos SEIA", c: "text-sky-600", bg: "bg-sky-50", border: "border-sky-100" },
