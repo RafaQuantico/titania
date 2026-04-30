@@ -978,10 +978,10 @@ export default function TitaniaApp() {
                             </div>
 
                             {/* Info Grid (Mimicking the table layout in the image) */}
-                            <div className="flex flex-col xl:flex-row gap-6">
+                            <div className="flex flex-wrap gap-6">
 
                               {/* Status/Origen Block */}
-                              <div className="flex flex-col gap-2 w-full lg:w-48 flex-shrink-0">
+                              <div className="flex flex-col gap-2 w-full xl:w-48 flex-shrink-0">
                                 <div className="bg-[#518b62] text-white text-xs font-medium px-4 py-3 rounded-md shadow-sm">
                                   <div className="uppercase tracking-wider text-[10px] text-emerald-100 mb-1 opacity-80">Fuente documental</div>
                                   <div>{c.origen} {c.rca_art !== "—" ? `→ RCA ${c.rca_art.replace('RCA', '').trim()}` : ""}</div>
@@ -994,7 +994,7 @@ export default function TitaniaApp() {
                               </div>
 
                               {/* Metadata Data Grid (Responsive Fix) */}
-                              <div className="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600">
+                              <div className="flex-1 grid gap-x-8 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                                 <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
                                   <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Organismo</span>
                                   <span className="font-semibold text-slate-800 break-words">{c.organismo}</span>
@@ -1075,7 +1075,7 @@ export default function TitaniaApp() {
                         <Activity className="text-emerald-600" /> Estadísticas de Cumplimiento Ambiental
                       </h3>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                      <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
                         <div className="bg-slate-50 border border-slate-100 rounded-lg p-4 text-center">
                           <div className="text-2xl font-black text-slate-700">{stats.total}</div>
                           <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">Total</div>
