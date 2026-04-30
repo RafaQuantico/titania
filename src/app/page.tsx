@@ -942,8 +942,8 @@ export default function TitaniaApp() {
                           <div className="flex-1 p-6 md:p-8 flex flex-col gap-6">
 
                             {/* Top Row: Title & Badges */}
-                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                              <div className="flex-1">
+                            <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
                                 <h3 className="text-slate-800 font-bold text-sm leading-relaxed max-w-3xl pr-4">
                                   {c.texto}
                                 </h3>
@@ -978,7 +978,7 @@ export default function TitaniaApp() {
                             </div>
 
                             {/* Info Grid (Mimicking the table layout in the image) */}
-                            <div className="flex flex-col lg:flex-row gap-6">
+                            <div className="flex flex-col xl:flex-row gap-6">
 
                               {/* Status/Origen Block */}
                               <div className="flex flex-col gap-2 w-full lg:w-48 flex-shrink-0">
@@ -994,7 +994,7 @@ export default function TitaniaApp() {
                               </div>
 
                               {/* Metadata Data Grid (Responsive Fix) */}
-                              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600">
+                              <div className="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-slate-50/50 rounded-lg border border-slate-100 align-start self-start text-xs text-slate-600">
                                 <div className="flex flex-col border-b border-slate-200/60 pb-2 gap-1.5 min-w-0">
                                   <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Organismo</span>
                                   <span className="font-semibold text-slate-800 break-words">{c.organismo}</span>

@@ -50,7 +50,7 @@ const ProyectosPanel = () => {
       <div className="text-xs text-slate-500 font-medium pb-2 border-b border-slate-200">
         {PROYECTOS.length} proyectos · corpus 89 documentos SEIA
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {PROYECTOS.map(p => {
           const rs = riesgoStyle[p.riesgo as keyof typeof riesgoStyle];
           const isOpen = sel === p.id;
@@ -186,7 +186,7 @@ const PersistenciaPanel = () => {
         ))}
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {datos.map((d, i) => {
           const isCritical = d.pct >= 70;
           const isWarning = d.pct >= 40 && d.pct < 70;
@@ -258,7 +258,7 @@ const BrecharPanel = () => {
               
               {isOpen && (
                 <div className="mt-4 pt-4 border-t border-slate-100 animate-fade-in flex flex-col gap-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                     <div className="bg-red-50 border border-red-100/50 rounded-lg p-3">
                       <div className="text-[10px] text-red-800/60 uppercase tracking-wider font-bold mb-1">Impacto CAPEX</div>
                       <div className="text-xs font-bold text-red-600">{b.impacto_capex}</div>
