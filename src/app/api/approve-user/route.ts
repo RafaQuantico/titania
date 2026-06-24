@@ -31,7 +31,7 @@ export async function GET(req: Request) {
   // 1. Obtener los datos del usuario para el correo
   const { data: usuario, error: fetchError } = await supabase
     .from('usuarios_demo')
-    .select('nombre, estado')
+    .select('nombre, estado, institucion')
     .eq('correo', correo.toLowerCase().trim())
     .single();
 
@@ -49,6 +49,9 @@ export async function GET(req: Request) {
   }
 
   const estadoPrevio = usuario.estado;
+  const isDemo02 = usuario.institucion?.includes('[DEMO 02]') || false;
+  const password = isDemo02 ? 'DemoTitania2233!' : 'DemoTitania1122!';
+  const demoLabel = isDemo02 ? 'DEMO 02' : 'DEMO 01';
 
   // 2. Actualizar el estado a 'aprobado'
   const { error: updateError } = await supabase
@@ -87,7 +90,7 @@ export async function GET(req: Request) {
       const mailOptions = {
         from: '"Titania Sync" <contacto@titan-ia.com>',
         to: correo,
-        subject: "✅ Acceso Aprobado - Demo Titania Sync",
+        subject: `✅ Acceso Aprobado (${demoLabel}) - Demo Titania Sync`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #334155; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
             <div style="background-color: #16a34a; padding: 20px; text-align: center;">
@@ -95,12 +98,12 @@ export async function GET(req: Request) {
             </div>
             <div style="padding: 30px; background-color: #f8fafc;">
               <h2 style="color: #1a2f24; margin-top: 0;">¡Hola, ${usuario.nombre}!</h2>
-              <p style="font-size: 16px; line-height: 1.5;">Tu solicitud de acceso ha sido revisada y aprobada. Ya puedes ingresar a la plataforma de demostración de Titania Sync.</p>
+              <p style="font-size: 16px; line-height: 1.5;">Tu solicitud de acceso ha sido revisada y aprobada. Ya puedes ingresar a la plataforma de demostración de Titania Sync (${demoLabel}).</p>
               
               <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px; margin: 24px 0; text-align: center;">
                 <p style="margin: 0 0 10px 0; font-size: 14px; color: #64748b; text-transform: uppercase;">Tu contraseña de acceso es:</p>
                 <div style="background-color: #f1f5f9; padding: 12px; border-radius: 4px; font-size: 20px; font-weight: bold; color: #0f172a; letter-spacing: 1px;">
-                  DemoTitania1122!
+                  ${password}
                 </div>
               </div>
 
@@ -128,7 +131,7 @@ export async function GET(req: Request) {
       <div style="text-align:center;padding:40px;border:1px solid #bbf7d0;border-radius:12px;background:white;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
         <div style="font-size:52px;margin-bottom:16px;">✅</div>
         <h2 style="color:#16a34a;margin:0 0 8px;font-size:22px;">Usuario Aprobado y Notificado</h2>
-        <p style="color:#374151;margin:0 0 16px;font-size:15px;">El correo <strong>${correo}</strong> ahora tiene acceso.<br><br>Se le ha enviado un correo automáticamente con la contraseña.</p>
+        <p style="color:#374151;margin:0 0 16px;font-size:15px;">El correo <strong>${correo}</strong> ahora tiene acceso a <strong>${demoLabel}</strong>.<br><br>Se le ha enviado un correo automáticamente con la contraseña.</p>
         <p style="color:#94a3b8;font-size:12px;margin:0;">Puedes cerrar esta ventana.</p>
       </div>
     </body></html>`,

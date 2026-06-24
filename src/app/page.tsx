@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { PROJECT, FASES, MCA, SYSTEM_PROMPT } from "../data/mca";
 import { SYSTEM_PROMPT_DESALADORAS } from "../data/desaladorasData";
+import { RW_WELCOME, SYSTEM_PROMPT_REGWATCH, RW_SUGGS } from "../data/regwatchData";
 import { Search, Sparkles as MessageSquare, Layers as Folder, SlidersHorizontal as Settings, Mic, SendHorizontal as Send, ChevronDown, ShieldCheck as CheckCircle2, TriangleAlert as AlertTriangle, BookOpen as FileText, Activity, BadgeAlert as ShieldAlert, Menu, X, UploadCloud } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DesaladorasDashboard from "../components/DesaladorasDashboard";
+import RegWatchApp from "../components/RegWatchApp";
 
 const INITIAL_BIBLIOTECA_DOCS = [
   { id: 1, tipo: "RCA", titulo: "Resolución de Calificación Ambiental (RCA)", fecha: "12/08/2023", autor: "SEA", estado: "Firmado digitalmente", file: "RCA_N_202510001198__Brisas_de_Mirasur___003__firmada.pdf" },
@@ -38,8 +40,9 @@ export default function TitaniaApp() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
+  const [selectedDemo, setSelectedDemo] = useState("demo01");
   const [showRequestAccess, setShowRequestAccess] = useState(false);
-  const [requestForm, setRequestForm] = useState({ name: "", company: "", email: "" });
+  const [requestForm, setRequestForm] = useState({ name: "", company: "", email: "", demo: "demo01" });
   const [requestStatus, setRequestStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   useEffect(() => {
@@ -49,7 +52,7 @@ export default function TitaniaApp() {
   }, []);
 
   const [activeTab, setActiveTab] = useState("mca"); // "mca", "brechas", "reporte"
-  const [activeProjectKey, setActiveProjectKey] = useState<'mirasur' | 'desaladoras'>('mirasur');
+  const [activeProjectKey, setActiveProjectKey] = useState<'mirasur' | 'desaladoras' | 'regwatch'>('mirasur');
   const [faseFilter, setFaseFilter] = useState("Todas");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -181,11 +184,18 @@ export default function TitaniaApp() {
           content: `__WELCOME__`
         }
       ]);
-    } else {
+    } else if (activeProjectKey === 'desaladoras') {
       setMessages([
         {
           role: "assistant",
           content: `__WELCOME_DESALADORAS__`
+        }
+      ]);
+    } else {
+      setMessages([
+        {
+          role: "assistant",
+          content: `__WELCOME_REGWATCH__`
         }
       ]);
     }
@@ -214,6 +224,8 @@ export default function TitaniaApp() {
       
       if (activeProjectKey === 'desaladoras') {
         promptContext = SYSTEM_PROMPT_DESALADORAS;
+      } else if (activeProjectKey === 'regwatch') {
+        promptContext = SYSTEM_PROMPT_REGWATCH;
       }
 
       const res = await fetch("/api/chat", {
@@ -297,7 +309,9 @@ export default function TitaniaApp() {
           <form
             onSubmit={async (e) => {
               e.preventDefault();
-              if (passwordInput === "DemoTitania1122!" && emailInput.includes("@")) {
+              const isDemo01Valid = selectedDemo === "demo01" && passwordInput === "DemoTitania1122!";
+              const isDemo02Valid = selectedDemo === "demo02" && passwordInput === "DemoTitania2233!";
+              if ((isDemo01Valid || isDemo02Valid) && emailInput.includes("@")) {
                 
                 setIsVerifying(true);
                 setPasswordError(false);
@@ -315,6 +329,13 @@ export default function TitaniaApp() {
                   if (data.existe === true) {
                     setIsAuthenticated(true);
                     setShowWelcome(true);
+                    if (selectedDemo === "demo02") {
+                      setActiveProjectKey("regwatch");
+                      setActiveTab("regwatch");
+                    } else {
+                      setActiveProjectKey("mirasur");
+                      setActiveTab("mca");
+                    }
                     
                     // Guardar log de Ingreso exitoso en Google Sheets
                     fetch("/api/log-sheet", {
@@ -340,6 +361,19 @@ export default function TitaniaApp() {
             }}
             className="flex flex-col items-center gap-3 w-full max-w-3xl"
           >
+            <div className="w-full shadow-xl rounded-xl overflow-hidden border border-white/20 bg-white/95 backdrop-blur-sm flex items-center mb-2">
+               <span className="flex items-center pl-5 pr-3 text-xs font-bold tracking-widest text-slate-500 uppercase whitespace-nowrap select-none border-r border-slate-200 py-4">
+                  Plataforma:
+               </span>
+               <select
+                 value={selectedDemo}
+                 onChange={(e) => setSelectedDemo(e.target.value)}
+                 className="flex-1 w-full bg-transparent py-4 pl-4 pr-10 mr-3 text-slate-800 text-sm focus:outline-none cursor-pointer font-semibold"
+               >
+                 <option value="demo01">DEMO 01</option>
+                 <option value="demo02">DEMO 02</option>
+               </select>
+            </div>
             <div className="flex w-full shadow-xl flex-col sm:flex-row rounded-xl overflow-hidden border border-white/20">
               {/* Email label+input */}
               <div className="flex flex-1 bg-white/95 backdrop-blur-sm border-b sm:border-b-0 sm:border-r border-slate-200">
@@ -423,7 +457,7 @@ export default function TitaniaApp() {
                      </div>
                      <h4 className="text-slate-800 font-bold text-lg mb-2">Solicitud Enviada</h4>
                      <p className="text-slate-600 text-sm leading-relaxed">Gracias por conectarte con nosotros. Responderemos muy pronto a tu solicitud.</p>
-                     <button onClick={() => {setShowRequestAccess(false); setRequestStatus("idle"); setRequestForm({name:"", company:"", email:""});}} className="mt-8 w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Cerrar</button>
+                     <button onClick={() => {setShowRequestAccess(false); setRequestStatus("idle"); setRequestForm({name:"", company:"", email:"", demo:"demo01"});}} className="mt-8 w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Cerrar</button>
                    </div>
                  ) : (
                    <form onSubmit={async (e) => {
@@ -445,7 +479,8 @@ export default function TitaniaApp() {
                            tipoAccion: "Solicitud", 
                            nombre: requestForm.name, 
                            institucion: requestForm.company, 
-                           correo: requestForm.email 
+                           correo: requestForm.email,
+                           demo: requestForm.demo
                          })
                        }).catch(console.error);
 
@@ -455,6 +490,13 @@ export default function TitaniaApp() {
                        setRequestStatus("error");
                      }
                    }} className="flex flex-col gap-5">
+                     <div>
+                       <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Plataforma Solicitada</label>
+                       <select value={requestForm.demo} onChange={e => setRequestForm({...requestForm, demo: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-3.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#518b62]/50 focus:border-[#518b62] transition-all cursor-pointer">
+                         <option value="demo01">DEMO 01</option>
+                         <option value="demo02">DEMO 02</option>
+                       </select>
+                     </div>
                      <div>
                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Nombre Completo</label>
                        <input type="text" required value={requestForm.name} onChange={e => setRequestForm({...requestForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#518b62]/50 focus:border-[#518b62] transition-all" placeholder="Ej. Juan Pérez" />
@@ -510,36 +552,73 @@ export default function TitaniaApp() {
                 </div>
 
                 {/* Body */}
-                <p className="text-white/80 text-sm leading-relaxed mb-6">
-                  Estás explorando una versión demostrativa de <span className="text-white font-semibold">Titania Sync</span>, la plataforma de Titania para el monitoreo y gestión de compromisos ambientales.
-                </p>
+                {selectedDemo === 'demo01' ? (
+                  <>
+                    <p className="text-white/80 text-sm leading-relaxed mb-6">
+                      Estás explorando una versión demostrativa de <span className="text-white font-semibold">Titania Sync</span>, la plataforma de Titania para el monitoreo y gestión de compromisos ambientales.
+                    </p>
 
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
-                  <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-widest mb-1">Proyecto en demo</p>
-                  <p className="text-white font-semibold text-sm mb-1">Proyecto Inmobiliario</p>
-                  <p className="text-white/65 text-xs leading-relaxed">
-                    Iniciativa inmobiliaria evaluada mediante Declaración de Impacto Ambiental, con RCA vigente (N°202510001198) que establece <span className="text-white font-semibold">47 compromisos ambientales</span> distribuidos en tres fases: Preconstrucción, Construcción y Operación.
-                  </p>
-                </div>
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
+                      <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-widest mb-1">Proyecto en demo</p>
+                      <p className="text-white font-semibold text-sm mb-1">Proyecto Inmobiliario</p>
+                      <p className="text-white/65 text-xs leading-relaxed">
+                        Iniciativa inmobiliaria evaluada mediante Declaración de Impacto Ambiental, con RCA vigente que establece compromisos ambientales en diversas fases.
+                      </p>
+                    </div>
 
-                <div className="mb-7">
-                  <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-widest mb-3">Funcionalidades disponibles</p>
-                  <ul className="flex flex-col gap-2">
-                    {[
-                      'Visualización y seguimiento de la Matriz de Compromisos Ambientales',
-                      'Detección automática de brechas entre la MCA y la RCA',
-                      'Biblioteca documental del expediente SEIA',
-                      'Asistente IA para consultas en lenguaje natural',
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-start gap-2.5 text-white/75 text-xs">
-                        <span className="mt-0.5 w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center flex-shrink-0">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 block" />
-                        </span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                    <div className="mb-7">
+                      <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-widest mb-3">Funcionalidades disponibles</p>
+                      <ul className="flex flex-col gap-2">
+                        {[
+                          'Visualización y seguimiento de la Matriz de Compromisos Ambientales',
+                          'Detección automática de brechas entre la MCA y la RCA',
+                          'Biblioteca documental del expediente SEIA',
+                          'Asistente IA para consultas en lenguaje natural',
+                        ].map((item, i) => (
+                          <li key={i} className="flex items-start gap-2.5 text-white/75 text-xs">
+                            <span className="mt-0.5 w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center flex-shrink-0">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 block" />
+                            </span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-white/80 text-sm leading-relaxed mb-6">
+                      Estás explorando una versión demostrativa de <span className="text-white font-semibold">RegWatch Ecuador</span>, impulsado por el motor de IA de Titania.
+                    </p>
+
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
+                      <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-widest mb-1">Alcance del piloto</p>
+                      <p className="text-white font-semibold text-sm mb-1">Ministerio de Economía y Finanzas (Ecuador)</p>
+                      <p className="text-white/65 text-xs leading-relaxed">
+                        Sistema de Inteligencia Regulatoria entrenado con el corpus normativo relevante para el MEF, incluyendo Contratación Pública, Finanzas, y Gobierno Territorial.
+                      </p>
+                    </div>
+
+                    <div className="mb-7">
+                      <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-widest mb-3">Funcionalidades disponibles</p>
+                      <ul className="flex flex-col gap-2">
+                        {[
+                          'Dashboard de métricas y cambios recientes',
+                          'Registro normativo unificado del MEF',
+                          'Clasificador automático de documentos normativos',
+                          'Asistente IA para trazabilidad y consultas legales',
+                        ].map((item, i) => (
+                          <li key={i} className="flex items-start gap-2.5 text-white/75 text-xs">
+                            <span className="mt-0.5 w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center flex-shrink-0">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 block" />
+                            </span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                )}
 
                 <button
                   onClick={() => { setShowWelcome(false); setTourStep(1); }}
@@ -572,8 +651,9 @@ export default function TitaniaApp() {
                   <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-1">1 / 3</p>
                   <h3 className="text-white font-bold text-sm mb-2">Panel de Navegación</h3>
                   <p className="text-white/70 text-xs leading-relaxed mb-4">
-                    Desde aquí accedes a tus proyectos y a la biblioteca documental del expediente SEIA.
-                    Usa el botón superior para ocultar o expandir el panel.
+                    {selectedDemo === 'demo01'
+                      ? "Desde aquí accedes a tus proyectos y a la biblioteca documental del expediente SEIA."
+                      : "Desde aquí accedes a las herramientas de inteligencia regulatoria de RegWatch."}
                   </p>
                   <div className="flex items-center justify-between">
                     <button onClick={() => setTourStep(0)} className="text-white/30 text-xs hover:text-white/60 transition-colors">Saltar tour</button>
@@ -595,10 +675,11 @@ export default function TitaniaApp() {
                   style={{ borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '10px solid #1a2f24' }} />
                 <div className="bg-[#1a2f24] border border-emerald-800/50 rounded-xl shadow-2xl p-5 w-72">
                   <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-1">2 / 3</p>
-                  <h3 className="text-white font-bold text-sm mb-2">Asistente TitanIA</h3>
+                  <h3 className="text-white font-bold text-sm mb-2">Asistente IA</h3>
                   <p className="text-white/70 text-xs leading-relaxed mb-4">
-                    Consulta en lenguaje natural sobre compromisos, brechas, documentos del expediente
-                    y cualquier aspecto del proyecto. TitanIA tiene el contexto documental completo del proyecto.
+                    {selectedDemo === 'demo01'
+                      ? "Un chat inteligente para consultar sobre compromisos ambientales, buscar oficios específicos o resolver dudas técnicas basándose en la RCA."
+                      : "Un chat normativo especializado para el MEF, con respuestas trazables a la fuente oficial."}
                   </p>
                   <div className="flex items-center justify-between">
                     <button onClick={() => setTourStep(0)} className="text-white/30 text-xs hover:text-white/60 transition-colors">Saltar tour</button>
@@ -719,32 +800,47 @@ export default function TitaniaApp() {
 
                   {isProjectsOpen && (
                     <div className="ml-9 mt-4 flex flex-col gap-3 border-l border-white/20 pl-4 animate-fade-up">
-                      <div className="text-white/50 text-[10px] uppercase tracking-wider font-bold">Proyecto Inmobiliario (DEMO)</div>
-                      <button
-                        onClick={() => { setActiveProjectKey('mirasur'); setActiveTab('mca'); }}
-                        className={`text-left text-xs transition-colors ${activeProjectKey === 'mirasur' && activeTab !== 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
-                      >
-                        › Dashboard MCA
-                      </button>
-                      <button
-                        onClick={() => { setActiveProjectKey('mirasur'); setActiveTab('biblioteca'); }}
-                        className={`text-left text-xs transition-colors ${activeProjectKey === 'mirasur' && activeTab === 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
-                      >
-                        › Biblioteca de Documentos
-                      </button>
-                      <div className="mt-2 text-white/50 text-[10px] uppercase tracking-wider font-bold">Proyecto Desaladoras</div>
-                      <button
-                        onClick={() => { setActiveProjectKey('desaladoras'); setActiveTab('mca'); }}
-                        className={`text-left text-xs transition-colors ${activeProjectKey === 'desaladoras' && activeTab !== 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
-                      >
-                        › Análisis Desaladoras (SEIA)
-                      </button>
-                      <button
-                        onClick={() => { setActiveProjectKey('desaladoras'); setActiveTab('biblioteca'); }}
-                        className={`text-left text-xs transition-colors ${activeProjectKey === 'desaladoras' && activeTab === 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
-                      >
-                        › Biblioteca Desaladoras
-                      </button>
+                      {selectedDemo === 'demo01' && (
+                        <>
+                          <div className="text-white/50 text-[10px] uppercase tracking-wider font-bold">Proyecto Inmobiliario (DEMO)</div>
+                          <button
+                            onClick={() => { setActiveProjectKey('mirasur'); setActiveTab('mca'); }}
+                            className={`text-left text-xs transition-colors ${activeProjectKey === 'mirasur' && activeTab !== 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                          >
+                            › Dashboard MCA
+                          </button>
+                          <button
+                            onClick={() => { setActiveProjectKey('mirasur'); setActiveTab('biblioteca'); }}
+                            className={`text-left text-xs transition-colors ${activeProjectKey === 'mirasur' && activeTab === 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                          >
+                            › Biblioteca de Documentos
+                          </button>
+                          <div className="mt-2 text-white/50 text-[10px] uppercase tracking-wider font-bold">Proyecto Desaladoras</div>
+                          <button
+                            onClick={() => { setActiveProjectKey('desaladoras'); setActiveTab('mca'); }}
+                            className={`text-left text-xs transition-colors ${activeProjectKey === 'desaladoras' && activeTab !== 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                          >
+                            › Análisis Desaladoras (SEIA)
+                          </button>
+                          <button
+                            onClick={() => { setActiveProjectKey('desaladoras'); setActiveTab('biblioteca'); }}
+                            className={`text-left text-xs transition-colors ${activeProjectKey === 'desaladoras' && activeTab === 'biblioteca' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                          >
+                            › Biblioteca Desaladoras
+                          </button>
+                        </>
+                      )}
+                      {selectedDemo === 'demo02' && (
+                        <>
+                          <div className="text-white/50 text-[10px] uppercase tracking-wider font-bold">⚡ RegWatch Ecuador</div>
+                          <button
+                            onClick={() => { setActiveProjectKey('regwatch'); setActiveTab('regwatch'); }}
+                            className={`text-left text-xs transition-colors ${activeProjectKey === 'regwatch' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                          >
+                            › Inteligencia Regulatoria MEF
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -777,8 +873,11 @@ export default function TitaniaApp() {
 
         {/* ── RIGHT PANEL (MAIN DASHBOARD) ── */}
         <main className="flex-1 flex flex-col min-w-0 bg-white border-l border-slate-200 shadow-sm z-0 overflow-hidden md:order-3">
-          
-          {activeTab === 'biblioteca' ? (
+
+          {/* ── REGWATCH DEMO 02 ── */}
+          {activeProjectKey === 'regwatch' ? (
+            <RegWatchApp />
+          ) : activeTab === 'biblioteca' ? (
             <>
               <div className="pt-6 md:pt-10 px-4 md:px-10 pb-4 md:pb-6 flex-shrink-0">
                 <h1 className="text-xl md:text-2xl font-bold text-slate-800 tracking-wide uppercase mb-4 md:mb-8">
@@ -1205,7 +1304,30 @@ export default function TitaniaApp() {
               const isUser = m.role === "user";
 
               /* ── WELCOME MESSAGE (first message) ── */
-              if (i === 0 && (m.content === '__WELCOME__' || m.content === '__WELCOME_DESALADORAS__')) {
+              if (i === 0 && (m.content === '__WELCOME__' || m.content === '__WELCOME_DESALADORAS__' || m.content === '__WELCOME_REGWATCH__')) {
+                if (m.content === '__WELCOME_REGWATCH__') {
+                  return (
+                    <div key={0} className="self-start items-start flex flex-col max-w-[92%] animate-fade-up">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 rounded bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-black">T</div>
+                        <span className="text-[10px] font-bold text-emerald-700 tracking-wide uppercase">TitanIA</span>
+                      </div>
+                      <div className="bg-white text-slate-700 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm p-4 text-sm leading-relaxed">
+                        <div className="markdown-prose">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}
+                            components={{
+                              p: ({ node, ...props }) => <p className="mb-3 last:mb-0" {...props} />,
+                              strong: ({ node, ...props }) => <strong className="font-bold text-emerald-800" {...props} />,
+                              ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-3" {...props} />,
+                              li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                            }}>
+                            {RW_WELCOME}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
                 const isDesaladoras = m.content === '__WELCOME_DESALADORAS__';
                 return (
                   <div key={0} className="self-start items-start flex flex-col max-w-[92%] animate-fade-up">
@@ -1294,7 +1416,7 @@ export default function TitaniaApp() {
           {/* Suggestion Chips */}
           {messages.length <= 2 && !loading && (
             <div className="px-6 pb-2 pt-4 flex flex-wrap gap-2 bg-slate-50/30">
-              {["¿Qué brechas encontraste?", "Resumen de permisos", "Generar reporte"].map((s, i) => (
+              {(activeProjectKey === 'regwatch' ? RW_SUGGS : ["¿Qué brechas encontraste?", "Resumen de permisos", "Generar reporte"]).map((s, i) => (
                 <button
                   key={i}
                   onClick={() => sendChat(s)}

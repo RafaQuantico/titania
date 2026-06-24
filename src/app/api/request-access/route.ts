@@ -9,27 +9,31 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { name, company, email } = await req.json();
+    const { name, company, email, demo } = await req.json();
 
     if (!name || !company || !email) {
       return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
     }
 
     const correoNormalizado = email.toLowerCase().trim();
+    const demoNormalizado = (demo === 'demo02') ? 'demo02' : 'demo01';
+    const demoLabel = demoNormalizado === 'demo02' ? 'DEMO 02' : 'DEMO 01';
 
     // ── 1. Guardar en Supabase (fuente de verdad) ──
     const { error: supabaseError } = await supabase
       .from('usuarios_demo')
       .insert({
         nombre: name,
-        institucion: company,
+        institucion: `${company} [${demoLabel}]`,
         correo: correoNormalizado,
         estado: 'pendiente',
       });
 
-    // Si el correo ya existe (unique constraint), no es fatal
+    // Si el correo ya existe (unique constraint), no es fatal.
+    // Para cualquier otro error, abortamos para no enviar correos falsos/rotos.
     if (supabaseError && supabaseError.code !== '23505') {
       console.error("Error guardando en Supabase:", supabaseError);
+      return NextResponse.json({ error: "Error de base de datos" }, { status: 500 });
     }
 
     // ── 2. Enviar correos por Hostinger ──
@@ -50,7 +54,7 @@ export async function POST(req: Request) {
     const mailOptionsAdmin = {
       from: '"Titania Sync" <contacto@titan-ia.com>',
       to: "contacto@titan-ia.com",
-      subject: `Nueva solicitud de acceso — ${name} (${company})`,
+      subject: `Nueva solicitud de acceso ${demoLabel} — ${name} (${company})`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
           <div style="background-color: #1a2f24; padding: 20px; text-align: center; border-bottom: 4px solid #518b62;">
@@ -61,6 +65,7 @@ export async function POST(req: Request) {
             <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px; margin-bottom: 24px;">
               <p style="margin: 0 0 10px 0;"><strong style="color:#64748b;font-size:11px;text-transform:uppercase;">Nombre:</strong><br><span style="color: #334155; font-size: 16px;">${name}</span></p>
               <p style="margin: 0 0 10px 0;"><strong style="color:#64748b;font-size:11px;text-transform:uppercase;">Institución:</strong><br><span style="color: #334155; font-size: 16px;">${company}</span></p>
+              <p style="margin: 0 0 10px 0;"><strong style="color:#64748b;font-size:11px;text-transform:uppercase;">Plataforma:</strong><br><span style="color: #334155; font-size: 16px; font-weight: bold;">${demoLabel}</span></p>
               <p style="margin: 0;"><strong style="color:#64748b;font-size:11px;text-transform:uppercase;">Correo:</strong><br><span style="color: #334155; font-size: 16px;">${email}</span></p>
             </div>
             <div style="text-align: center;">
