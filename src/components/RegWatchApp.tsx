@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { HelpCircle, X, FileText, Zap, Search } from "lucide-react";
+import { HelpCircle, X, FileText, Zap, Search, LayoutDashboard } from "lucide-react";
+import RegWatchInfographicModal from "./RegWatchInfographicModal";
 import {
   RW_NORMAS, RW_ALERTAS, RW_FUENTES, RW_EJEMPLOS,
   SYSTEM_PROMPT_REGWATCH, RW_SUGGS,
@@ -525,6 +526,7 @@ const TAB_LABEL: Record<RWTab, string> = {
 export default function RegWatchApp() {
   const [activeTab, setActiveTab] = useState<RWTab>("rw_dashboard");
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [showInfographic, setShowInfographic] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -546,6 +548,12 @@ export default function RegWatchApp() {
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2 pb-2 flex-shrink-0">
+          <button
+            onClick={() => setShowInfographic(true)}
+            className="flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold text-white bg-[#0a1e32] hover:bg-[#12304c] rounded-full transition-colors uppercase tracking-widest shadow-md"
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" /> Resumen Ejecutivo
+          </button>
           <button
             onClick={() => setShowHowItWorks(true)}
             className="flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors mr-2 uppercase tracking-widest"
@@ -636,6 +644,9 @@ export default function RegWatchApp() {
         </div>,
         document.body
       )}
+
+      {/* ── Modal: Infografía (Resumen Ejecutivo) ── */}
+      {showInfographic && <RegWatchInfographicModal onClose={() => setShowInfographic(false)} />}
     </div>
   );
 }
