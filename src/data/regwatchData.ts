@@ -164,7 +164,7 @@ export const RW_ALERTAS = [
 ];
 
 export const RW_FUENTES = [
-  { id:"F001", nombre:"Registro Oficial de Ecuador", url:"https://registroficial.gob.ec",
+  { id:"F001", nombre:"Registro Oficial de Ecuador", url:"https://www.registroficial.gob.ec",
     tipo:"Diario oficial", estado:"activa", pais:"EC",
     desc:"Publicación oficial del Estado ecuatoriano. Leyes, decretos ejecutivos, acuerdos ministeriales y resoluciones. Fuente primaria de toda la normativa vigente.",
     ultima_rev:"2026-06-24", frecuencia:"Diaria", n_indexadas:98 },
