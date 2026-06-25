@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { HelpCircle, X, FileText, Zap, Search } from "lucide-react";
 import {
   RW_NORMAS, RW_ALERTAS, RW_FUENTES, RW_EJEMPLOS,
   SYSTEM_PROMPT_REGWATCH, RW_SUGGS,
@@ -522,6 +523,7 @@ const TAB_LABEL: Record<RWTab, string> = {
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function RegWatchApp() {
   const [activeTab, setActiveTab] = useState<RWTab>("rw_dashboard");
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -538,6 +540,12 @@ export default function RegWatchApp() {
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2 pb-2 flex-shrink-0">
+          <button
+            onClick={() => setShowHowItWorks(true)}
+            className="flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors mr-2 uppercase tracking-widest"
+          >
+            <HelpCircle className="w-3.5 h-3.5" /> ¿Cómo funciona?
+          </button>
           <span className="text-[10px] text-slate-400">{RW_NORMAS.length} normas · {RW_ALERTAS.length} alertas</span>
           <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 block"></span>En línea
@@ -557,6 +565,70 @@ export default function RegWatchApp() {
           {activeTab === "rw_fuentes"      && <RWFuentes />}
         </div>
       </div>
+
+      {/* ── Modal: ¿Cómo funciona? ── */}
+      {showHowItWorks && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowHowItWorks(false)}></div>
+          <div className="relative bg-[#0F2D4A] border border-[#1D6FA4] rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden animate-fade-up">
+            
+            {/* Header */}
+            <div className="px-8 pt-8 pb-6 relative">
+              <button 
+                onClick={() => setShowHowItWorks(false)}
+                className="absolute top-6 right-6 p-2 rounded-lg bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <h4 className="text-[#38bdf8] text-[10px] font-bold uppercase tracking-widest mb-2">¿Cómo funciona RegWatch?</h4>
+              <h2 className="text-2xl font-black text-white tracking-tight">Tres pasos para convertir normativa dispersa en conocimiento accionable</h2>
+            </div>
+
+            {/* Cards */}
+            <div className="px-8 pb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              <div className="bg-[#1e3a5f] border border-[#2b4c7e] rounded-xl p-6 shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-[#0F2D4A] border border-[#1D6FA4] flex items-center justify-center mb-4">
+                  <FileText className="w-5 h-5 text-[#fcd34d]" />
+                </div>
+                <h3 className="text-[#34d399] font-bold text-lg mb-3">1. Corpus</h3>
+                <p className="text-blue-100/80 text-sm leading-relaxed">
+                  El sistema indexa normas, resoluciones, acuerdos ministeriales e instructivos desde fuentes oficiales. Cada norma queda con trazabilidad documental y alerta de cambios.
+                </p>
+              </div>
+
+              <div className="bg-[#1e3a5f] border border-[#2b4c7e] rounded-xl p-6 shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-[#0F2D4A] border border-[#1D6FA4] flex items-center justify-center mb-4">
+                  <Zap className="w-5 h-5 text-[#fb923c]" />
+                </div>
+                <h3 className="text-[#34d399] font-bold text-lg mb-3">2. Procesamiento IA</h3>
+                <p className="text-blue-100/80 text-sm leading-relaxed">
+                  Al hacer una consulta, el motor busca en el corpus, identifica normas relevantes, mapea requisitos y plazos, y cita la fuente oficial.
+                </p>
+              </div>
+
+              <div className="bg-[#1e3a5f] border border-[#2b4c7e] rounded-xl p-6 shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-[#0F2D4A] border border-[#1D6FA4] flex items-center justify-center mb-4">
+                  <Search className="w-5 h-5 text-[#a78bfa]" />
+                </div>
+                <h3 className="text-[#34d399] font-bold text-lg mb-3">3. Respuesta trazable</h3>
+                <p className="text-blue-100/80 text-sm leading-relaxed">
+                  Recibes la respuesta con cita a la norma, organismo responsable y advertencia sobre límites de interpretación. Apoya el criterio del funcionario; no lo reemplaza.
+                </p>
+              </div>
+
+            </div>
+
+            {/* Footer */}
+            <div className="bg-[#0b2239] px-8 py-4 border-t border-[#1D6FA4]/30">
+              <p className="text-center text-blue-200/50 text-[11px]">
+                ⚠️ RegWatch no automatiza decisiones públicas ni reemplaza el criterio legal o técnico de los funcionarios. · Haz clic fuera para cerrar.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
