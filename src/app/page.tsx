@@ -701,10 +701,13 @@ export default function TitaniaApp() {
                   style={{ borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderLeft: '10px solid #1a2f24' }} />
                 <div className="bg-[#1a2f24] border border-emerald-800/50 rounded-xl shadow-2xl p-5 w-72">
                   <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-1">3 / 3</p>
-                  <h3 className="text-white font-bold text-sm mb-2">Dashboard MCA & Biblioteca</h3>
+                  <h3 className="text-white font-bold text-sm mb-2">
+                    {selectedDemo === 'demo01' ? "Dashboard MCA & Biblioteca" : "Dashboard Normativo"}
+                  </h3>
                   <p className="text-white/70 text-xs leading-relaxed mb-4">
-                    Visualiza la Matriz de Compromisos Ambientales, filtra por fase, revisa el estado
-                    de cumplimiento por compromiso y accede a la biblioteca documental completa.
+                    {selectedDemo === 'demo01'
+                      ? "Visualiza la Matriz de Compromisos Ambientales, filtra por fase, revisa el estado de cumplimiento por compromiso y accede a la biblioteca documental completa."
+                      : "Explora la base centralizada del marco normativo, revisa alertas críticas y mantente al día con los cambios regulatorios del sector público."}
                   </p>
                   <div className="flex items-center justify-between">
                     <button onClick={() => setTourStep(0)} className="text-white/30 text-xs hover:text-white/60 transition-colors">Saltar tour</button>
