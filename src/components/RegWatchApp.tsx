@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { HelpCircle, X, FileText, Zap, Search } from "lucide-react";
@@ -524,6 +525,11 @@ const TAB_LABEL: Record<RWTab, string> = {
 export default function RegWatchApp() {
   const [activeTab, setActiveTab] = useState<RWTab>("rw_dashboard");
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -567,8 +573,8 @@ export default function RegWatchApp() {
       </div>
 
       {/* ── Modal: ¿Cómo funciona? ── */}
-      {showHowItWorks && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {showHowItWorks && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowHowItWorks(false)}></div>
           <div className="relative bg-[#0F2D4A] border border-[#1D6FA4] rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden animate-fade-up">
             
@@ -627,7 +633,8 @@ export default function RegWatchApp() {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
