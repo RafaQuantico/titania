@@ -29,6 +29,9 @@ export async function GET(req: Request) {
         .password-box { background:linear-gradient(135deg,#1a2f24,#2d5a3d); border-radius:14px; padding:24px; margin:24px 0; }
         .password-label { font-size:11px; font-weight:700; letter-spacing:2px; color:#8ebc9b; text-transform:uppercase; margin-bottom:12px; }
         .password-value { font-size:32px; font-weight:900; color:#ffffff; letter-spacing:4px; font-family:'Courier New',monospace; }
+        .copy-btn { display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:2px solid #e2e8f0; color:#334155; font-size:14px; font-weight:600; padding:10px 24px; border-radius:8px; cursor:pointer; transition:all 0.2s ease; margin-top:4px; }
+        .copy-btn:hover { background:#f1f5f9; border-color:#94a3b8; }
+        .copy-btn.copied { background:#dcfce7; border-color:#86efac; color:#166534; }
         .timer-box { background:#fef3c7; border:1px solid #f59e0b; border-radius:10px; padding:16px; margin:20px 0; font-size:13px; color:#92400e; }
         .btn { display:inline-block; background:linear-gradient(135deg,#1a2f24,#2d5a3d); color:white; text-decoration:none; font-weight:700; font-size:15px; padding:16px 36px; border-radius:10px; margin-top:24px; }
         .footer { font-size:11px; color:#94a3b8; margin-top:24px; }
@@ -104,8 +107,39 @@ export async function GET(req: Request) {
   const contenido = `
     <div class="password-box">
       <p class="password-label">Tu contraseña de acceso</p>
-      <p class="password-value">${usuario.password_especial}</p>
+      <p class="password-value" id="pwd-value">${usuario.password_especial}</p>
     </div>
+    <button class="copy-btn" id="copy-btn" onclick="copyPassword()">
+      <span id="copy-icon">📋</span>
+      <span id="copy-text">Copiar contraseña</span>
+    </button>
+    <script>
+      function copyPassword() {
+        var pwd = document.getElementById('pwd-value').innerText;
+        navigator.clipboard.writeText(pwd).then(function() {
+          var btn = document.getElementById('copy-btn');
+          var icon = document.getElementById('copy-icon');
+          var text = document.getElementById('copy-text');
+          btn.classList.add('copied');
+          icon.innerText = '✅';
+          text.innerText = '¡Copiada!';
+          setTimeout(function() {
+            btn.classList.remove('copied');
+            icon.innerText = '📋';
+            text.innerText = 'Copiar contraseña';
+          }, 2000);
+        }).catch(function() {
+          // Fallback para navegadores que no soportan clipboard API
+          var el = document.createElement('textarea');
+          el.value = pwd;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+          document.getElementById('copy-text').innerText = '¡Copiada!';
+        });
+      }
+    </script>
     <div class="timer-box">
       ⏱️ ${tiempoTexto}
     </div>

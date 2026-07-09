@@ -107,7 +107,7 @@ export async function POST(req: Request) {
                       
                       <p style="margin:0 0 8px 0;font-size:18px;font-weight:700;color:#1a2f24;">Hola, ${nombre.trim()} 👋</p>
                       <p style="margin:0 0 28px 0;font-size:15px;line-height:1.7;color:#475569;">
-                        Has sido seleccionado como <strong>usuario especial</strong> para acceder a la demostración privada de <strong>Titania Sync</strong>. Esta es una experiencia exclusiva diseñada para que puedas explorar todas las capacidades de nuestra plataforma de inteligencia regulatoria.
+                        Has sido seleccionado como <strong>usuario especial</strong> para acceder a la demostración privada de <strong>Titania Sync</strong>. Esta es una experiencia exclusiva diseñada para que puedas explorar algunas de las capacidades de nuestra plataforma de inteligencia regulatoria.
                       </p>
 
                       <!-- Instrucciones -->

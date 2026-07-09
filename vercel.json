@@ -5,7 +5,7 @@
   "crons": [
     {
       "path": "/api/demo02-special/check-expiry?secret=titania-cron-2025",
-      "schedule": "0 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
