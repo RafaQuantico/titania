@@ -95,6 +95,7 @@ export async function POST(req: Request) {
                   <!-- Header -->
                   <tr>
                     <td style="background:linear-gradient(160deg,#0f1e17 0%,#1a2f24 60%,#2d5a3d 100%);padding:48px 48px 40px 48px;">
+                      <img src="${BASE_URL}/titania-logo.png" alt="Titania" width="120" style="display:block;margin:0 0 32px 0;" />
                       <p style="margin:0 0 24px 0;font-size:10px;font-weight:700;letter-spacing:4px;color:#518b62;text-transform:uppercase;">Acceso Especial</p>
                       <h1 style="margin:0 0 6px 0;font-size:32px;font-weight:800;color:#ffffff;line-height:1.15;letter-spacing:-0.5px;">Titania Sync</h1>
                       <p style="margin:0;font-size:13px;color:#6dab84;letter-spacing:2px;text-transform:uppercase;">DEMO 02</p>
