@@ -73,33 +73,43 @@ export async function GET(req: Request) {
               <!DOCTYPE html>
               <html>
               <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-              <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
-                <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 20px;">
+              <body style="margin:0;padding:0;background-color:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#eef2f7;padding:40px 20px;">
                   <tr>
                     <td align="center">
-                      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,0.10);">
+                      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 24px rgba(0,0,0,0.08);">
                         
                         <!-- Header alerta -->
                         <tr>
-                          <td style="background:linear-gradient(135deg,#92400e 0%,#b45309 100%);padding:36px 40px;text-align:center;">
-                            <p style="margin:0 0 8px 0;font-size:40px;">⏰</p>
-                            <h1 style="margin:0;font-size:24px;font-weight:800;color:#ffffff;">¡Te quedan ~${horasRestantes} horas!</h1>
-                            <p style="margin:8px 0 0 0;font-size:14px;color:#fde68a;">Titania Sync — DEMO 02</p>
+                          <td style="background:linear-gradient(160deg,#78350f 0%,#92400e 60%,#b45309 100%);padding:48px 48px 40px 48px;">
+                            <p style="margin:0 0 24px 0;font-size:10px;font-weight:700;letter-spacing:4px;color:#fcd34d;text-transform:uppercase;">Aviso Importante</p>
+                            <h1 style="margin:0 0 6px 0;font-size:28px;font-weight:800;color:#ffffff;line-height:1.15;letter-spacing:-0.5px;">Expira en ~${horasRestantes} horas</h1>
+                            <p style="margin:0;font-size:13px;color:#fde68a;letter-spacing:2px;text-transform:uppercase;">Titania Sync &nbsp;&middot;&nbsp; DEMO 02</p>
                           </td>
                         </tr>
 
                         <!-- Body -->
                         <tr>
-                          <td style="padding:36px 40px;">
-                            <p style="margin:0 0 20px 0;font-size:16px;font-weight:700;color:#1a2f24;">Hola, ${usuario.nombre} 👋</p>
-                            <p style="margin:0 0 24px 0;font-size:15px;line-height:1.7;color:#475569;">
-                              Tu período de acceso especial a <strong>Titania Sync DEMO 02</strong> está por finalizar. Te quedan aproximadamente <strong>${horasRestantes} horas</strong> para explorar la plataforma.
+                          <td style="padding:44px 48px;">
+                            <p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:#92400e;letter-spacing:1px;text-transform:uppercase;">Estimado/a ${usuario.nombre.trim()}</p>
+                            <p style="margin:0 0 24px 0;font-size:15px;line-height:1.8;color:#475569;">
+                              Su período de acceso especial a <strong style="color:#1a2f24;">Titania Sync DEMO 02</strong> está por finalizar. Le quedan aproximadamente <strong>${horasRestantes} horas</strong> para explorar la plataforma.
                             </p>
 
-                            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border:1px solid #f59e0b;border-radius:12px;margin-bottom:28px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbeb;border:1px solid #f59e0b;border-radius:3px;margin-bottom:32px;">
                               <tr>
-                                <td style="padding:20px 24px;font-size:14px;color:#92400e;line-height:1.6;">
-                                  💡 <strong>¿Necesitas más tiempo?</strong> Si quieres continuar explorando o estás interesado en adquirir el servicio, contáctanos antes de que expire tu acceso.
+                                <td style="padding:18px 22px;">
+                                  <table cellpadding="0" cellspacing="0"><tr>
+                                    <td style="vertical-align:top;padding-right:14px;padding-top:2px;">
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="#92400e" stroke-width="1.8"/>
+                                        <path d="M12 8v4M12 16h.01" stroke="#92400e" stroke-width="2" stroke-linecap="round"/>
+                                      </svg>
+                                    </td>
+                                    <td style="font-size:13px;color:#92400e;line-height:1.7;">
+                                      <strong>¿Necesita más tiempo?</strong> Si desea continuar explorando o está interesado en adquirir el servicio, contáctenos antes de que expire su acceso.
+                                    </td>
+                                  </tr></table>
                                 </td>
                               </tr>
                             </table>
@@ -107,15 +117,15 @@ export async function GET(req: Request) {
                             <table width="100%" cellpadding="0" cellspacing="0">
                               <tr>
                                 <td align="center" style="padding-bottom:16px;">
-                                  <a href="${BASE_URL}" style="display:inline-block;background:linear-gradient(135deg,#1a2f24 0%,#2d5a3d 100%);color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:16px 40px;border-radius:10px;">
-                                    Ingresar a la Plataforma →
+                                  <a href="${BASE_URL}" style="display:inline-block;background:linear-gradient(135deg,#1a2f24 0%,#2d5a3d 100%);color:#ffffff;text-decoration:none;font-weight:700;font-size:13px;padding:16px 40px;border-radius:3px;letter-spacing:2px;text-transform:uppercase;">
+                                    Ingresar a la Plataforma
                                   </a>
                                 </td>
                               </tr>
                               <tr>
                                 <td align="center">
-                                  <a href="mailto:contacto@titan-ia.com" style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;color:#334155;text-decoration:none;font-weight:600;font-size:14px;padding:12px 32px;border-radius:10px;">
-                                    📩 Contactar a Titania
+                                  <a href="mailto:contacto@titan-ia.com" style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;color:#475569;text-decoration:none;font-weight:600;font-size:12px;padding:12px 32px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;">
+                                    Contactar a Titania
                                   </a>
                                 </td>
                               </tr>
@@ -125,8 +135,8 @@ export async function GET(req: Request) {
 
                         <!-- Footer -->
                         <tr>
-                          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 40px;text-align:center;">
-                            <p style="margin:0;font-size:11px;color:#94a3b8;">Equipo Titania Sync · contacto@titan-ia.com</p>
+                          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:24px 48px;text-align:center;">
+                            <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.7;">Equipo Titania Sync &nbsp;&middot;&nbsp; <a href="mailto:contacto@titan-ia.com" style="color:#64748b;text-decoration:none;">contacto@titan-ia.com</a></p>
                           </td>
                         </tr>
                       </table>
@@ -156,48 +166,48 @@ export async function GET(req: Request) {
               <!DOCTYPE html>
               <html>
               <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-              <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
-                <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 20px;">
+              <body style="margin:0;padding:0;background-color:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#eef2f7;padding:40px 20px;">
                   <tr>
                     <td align="center">
-                      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,0.10);">
+                      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 2px 24px rgba(0,0,0,0.08);">
 
                         <!-- Header gracias -->
                         <tr>
-                          <td style="background:linear-gradient(135deg,#1a2f24 0%,#2d5a3d 100%);padding:40px;text-align:center;">
-                            <p style="margin:0 0 12px 0;font-size:44px;">🌿</p>
-                            <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;">¡Gracias por tu interés!</h1>
-                            <p style="margin:10px 0 0 0;font-size:14px;color:#a8d5b5;">Titania Sync — DEMO 02</p>
+                          <td style="background:linear-gradient(160deg,#0f1e17 0%,#1a2f24 60%,#2d5a3d 100%);padding:48px 48px 40px 48px;">
+                            <p style="margin:0 0 24px 0;font-size:10px;font-weight:700;letter-spacing:4px;color:#518b62;text-transform:uppercase;">Acceso Finalizado</p>
+                            <h1 style="margin:0 0 6px 0;font-size:32px;font-weight:800;color:#ffffff;line-height:1.15;letter-spacing:-0.5px;">¡Gracias por su interés!</h1>
+                            <p style="margin:0;font-size:13px;color:#6dab84;letter-spacing:2px;text-transform:uppercase;">Titania Sync &nbsp;&middot;&nbsp; DEMO 02</p>
                           </td>
                         </tr>
 
                         <!-- Body -->
                         <tr>
-                          <td style="padding:40px;">
-                            <p style="margin:0 0 20px 0;font-size:16px;font-weight:700;color:#1a2f24;">Hola, ${usuario.nombre} 👋</p>
-                            <p style="margin:0 0 20px 0;font-size:15px;line-height:1.7;color:#475569;">
-                              Tu período de acceso especial a <strong>Titania Sync DEMO 02</strong> ha finalizado. Esperamos que la experiencia haya sido valiosa y que hayas podido explorar el potencial de nuestra plataforma de inteligencia regulatoria.
+                          <td style="padding:44px 48px;">
+                            <p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:#2d5a3d;letter-spacing:1px;text-transform:uppercase;">Estimado/a ${usuario.nombre.trim()}</p>
+                            <p style="margin:0 0 20px 0;font-size:15px;line-height:1.8;color:#475569;">
+                              Su período de acceso especial a <strong style="color:#1a2f24;">Titania Sync DEMO 02</strong> ha finalizado. Esperamos que la experiencia haya sido valiosa y que haya podido explorar el potencial de nuestra plataforma de inteligencia regulatoria.
                             </p>
-                            <p style="margin:0 0 28px 0;font-size:15px;line-height:1.7;color:#475569;">
-                              Si tienes preguntas, quieres obtener más información sobre nuestros servicios, o estás listo para dar el siguiente paso, nuestro equipo está disponible para acompañarte.
+                            <p style="margin:0 0 32px 0;font-size:15px;line-height:1.8;color:#475569;">
+                              Si tiene preguntas, desea obtener más información sobre nuestros servicios, o está listo para dar el siguiente paso, nuestro equipo está disponible para acompañarle.
                             </p>
 
                             <!-- CTA -->
-                            <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:12px;margin-bottom:28px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:3px;margin-bottom:32px;">
                               <tr>
-                                <td style="padding:24px;text-align:center;">
-                                  <p style="margin:0 0 8px 0;font-size:14px;color:#166534;font-weight:700;">¿Listo para seguir adelante?</p>
-                                  <p style="margin:0 0 20px 0;font-size:13px;color:#16a34a;line-height:1.6;">Contáctate con tu ejecutivo Titania para más información o para adquirir el servicio.</p>
-                                  <a href="mailto:contacto@titan-ia.com?subject=Información sobre Titania Sync - ${encodeURIComponent(usuario.nombre)}" 
-                                     style="display:inline-block;background:linear-gradient(135deg,#1a2f24,#2d5a3d);color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:16px 36px;border-radius:10px;">
-                                    📩 Contactar a Titania
+                                <td style="padding:28px 24px;text-align:center;">
+                                  <p style="margin:0 0 8px 0;font-size:14px;color:#1a2f24;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">¿Listo para seguir adelante?</p>
+                                  <p style="margin:0 0 24px 0;font-size:14px;color:#475569;line-height:1.6;">Contáctese con su ejecutivo Titania para más información o para adquirir el servicio.</p>
+                                  <a href="mailto:contacto@titan-ia.com?subject=Información sobre Titania Sync - ${encodeURIComponent(usuario.nombre.trim())}" 
+                                     style="display:inline-block;background:linear-gradient(135deg,#1a2f24,#2d5a3d);color:#ffffff;text-decoration:none;font-weight:700;font-size:13px;padding:16px 40px;border-radius:3px;letter-spacing:2px;text-transform:uppercase;">
+                                    Contactar a Titania
                                   </a>
                                 </td>
                               </tr>
                             </table>
 
-                            <p style="margin:0;font-size:14px;line-height:1.7;color:#64748b;text-align:center;">
-                              También puedes escribirnos directamente a<br>
+                            <p style="margin:0;font-size:13px;line-height:1.7;color:#64748b;text-align:center;">
+                              También puede escribirnos directamente a<br>
                               <a href="mailto:contacto@titan-ia.com" style="color:#1a2f24;font-weight:600;text-decoration:none;">contacto@titan-ia.com</a>
                             </p>
                           </td>
@@ -205,9 +215,9 @@ export async function GET(req: Request) {
 
                         <!-- Footer -->
                         <tr>
-                          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:24px 40px;text-align:center;">
-                            <p style="margin:0 0 6px 0;font-size:12px;color:#94a3b8;">Fue un placer tenerte en nuestra plataforma, <strong>${usuario.nombre}</strong>.</p>
-                            <p style="margin:0;font-size:11px;color:#cbd5e1;">Equipo Titania Sync · contacto@titan-ia.com</p>
+                          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:24px 48px;text-align:center;">
+                            <p style="margin:0 0 6px 0;font-size:11px;color:#64748b;line-height:1.7;">Fue un placer tenerle en nuestra plataforma, <strong style="color:#475569;">${usuario.nombre.trim()}</strong>.</p>
+                            <p style="margin:0;font-size:11px;color:#94a3b8;">Equipo Titania Sync &nbsp;&middot;&nbsp; <a href="mailto:contacto@titan-ia.com" style="color:#94a3b8;text-decoration:none;">contacto@titan-ia.com</a></p>
                           </td>
                         </tr>
 
