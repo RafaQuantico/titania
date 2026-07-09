@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RegWatch Ecuador · Pitch</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:#F0F3F8;color:#1A2433;
+    display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;}
+  .page{width:860px;background:#fff;border-radius:16px;overflow:hidden;
+    box-shadow:0 8px 48px rgba(15,45,74,0.12);}
+
+  /* HEADER */
+  .header{background:linear-gradient(135deg,#0F2D4A 0%,#1A3D60 100%);
+    padding:28px 36px 24px;position:relative;overflow:hidden;}
+  .header::before{content:"";position:absolute;top:-40px;right:-40px;
+    width:220px;height:220px;border-radius:50%;
+    background:rgba(11,110,110,0.15);pointer-events:none;}
+  .logo{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .logo-icon{width:36px;height:36px;border-radius:9px;background:#D97706;
+    display:flex;align-items:center;justify-content:center;
+    font-size:17px;font-weight:900;color:#fff;flex-shrink:0;}
+  .logo-text{font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.02em;}
+  .logo-sub{font-size:10px;color:rgba(255,255,255,0.45);font-weight:500;}
+  .header-body{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;}
+  .headline{font-size:22px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:8px;}
+  .headline span{color:#D97706;}
+  .subline{font-size:11.5px;color:rgba(255,255,255,0.6);line-height:1.6;max-width:520px;}
+  .badges{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;}
+  .badge{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);
+    border-radius:8px;padding:6px 12px;text-align:center;}
+  .badge-val{font-size:17px;font-weight:900;color:#D97706;}
+  .badge-lbl{font-size:8.5px;color:rgba(255,255,255,0.5);font-weight:500;}
+
+  /* MAIN GRID */
+  .main{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+  .col-left{padding:24px 28px;border-right:1px solid #E2E8F0;}
+  .col-right{padding:24px 28px;}
+
+  /* SECTION */
+  .sec-label{font-size:9px;font-weight:700;color:#0B6E6E;text-transform:uppercase;
+    letter-spacing:0.08em;margin-bottom:6px;}
+  .sec-title{font-size:14px;font-weight:800;color:#0F2D4A;margin-bottom:10px;}
+
+  /* PROBLEM */
+  .problem-box{background:#FEF7EC;border:1px solid rgba(201,113,10,0.25);
+    border-radius:10px;padding:12px 14px;margin-bottom:14px;}
+  .problem-text{font-size:11px;color:#5A4010;line-height:1.6;}
+  .problem-list{margin-top:8px;display:flex;flex-direction:column;gap:4px;}
+  .problem-item{font-size:10.5px;color:#8B5E1A;display:flex;gap:7px;}
+
+  /* HOW IT WORKS */
+  .steps{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .step{display:flex;gap:12px;align-items:flex-start;}
+  .step-n{width:26px;height:26px;border-radius:50%;background:#0F2D4A;
+    color:#fff;font-size:12px;font-weight:800;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;}
+  .step-body{}
+  .step-t{font-size:11.5px;font-weight:700;color:#0F2D4A;margin-bottom:2px;}
+  .step-d{font-size:10px;color:#5A6D80;line-height:1.5;}
+
+  /* DEMOS */
+  .demos{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .demo{background:#F6F8FC;border-radius:9px;padding:11px 13px;
+    border-left:3px solid #0B6E6E;}
+  .demo.d2{border-left-color:#1D6FA4;}
+  .demo.d3{border-left-color:#D97706;}
+  .demo-head{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+  .demo-num{font-size:9px;font-weight:700;color:#fff;background:#0B6E6E;
+    border-radius:4px;padding:1px 7px;}
+  .demo.d2 .demo-num{background:#1D6FA4;}
+  .demo.d3 .demo-num{background:#D97706;}
+  .demo-t{font-size:11.5px;font-weight:700;color:#0F2D4A;}
+  .demo-d{font-size:10px;color:#5A6D80;line-height:1.45;}
+
+  /* NORMAS GRID */
+  .normas-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:14px;}
+  .norma-chip{background:#F0F3F8;border:1px solid #DDE3EC;border-radius:6px;
+    padding:5px 9px;}
+  .norma-n{font-size:9px;font-weight:700;color:#0F2D4A;}
+  .norma-desc{font-size:8.5px;color:#8FA0B0;line-height:1.3;}
+
+  /* TIMELINE */
+  .timeline{display:flex;gap:0;position:relative;margin-bottom:14px;overflow:hidden;}
+  .tl-step{flex:1;position:relative;}
+  .tl-step:not(:last-child)::after{content:"";position:absolute;
+    top:14px;right:-1px;width:100%;height:2px;background:#E2E8F0;z-index:0;}
+  .tl-dot{width:12px;height:12px;border-radius:50%;background:#0F2D4A;
+    margin:0 auto 4px;position:relative;z-index:1;border:2px solid #fff;
+    box-shadow:0 0 0 2px #0F2D4A;}
+  .tl-dot.active{background:#0B6E6E;box-shadow:0 0 0 2px #0B6E6E;}
+  .tl-label{font-size:9px;font-weight:700;color:#0F2D4A;text-align:center;}
+  .tl-sub{font-size:8px;color:#8FA0B0;text-align:center;line-height:1.3;}
+
+  /* ALERTS */
+  .alerts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .alert{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;
+    border-radius:7px;background:#FEF0EE;border:1px solid rgba(192,57,43,0.2);}
+  .alert.med{background:#FEF7EC;border-color:rgba(201,113,10,0.2);}
+  .alert-icon{font-size:12px;flex-shrink:0;margin-top:1px;}
+  .alert-t{font-size:10.5px;font-weight:700;color:#0F2D4A;margin-bottom:1px;}
+  .alert-d{font-size:9.5px;color:#5A6D80;line-height:1.4;}
+
+  /* NEXT STEPS */
+  .next{background:linear-gradient(135deg,#0F2D4A,#1A3D60);
+    border-radius:10px;padding:16px 18px;margin-bottom:0;}
+  .next-title{font-size:12px;font-weight:800;color:#fff;margin-bottom:10px;}
+  .next-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .next-step{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
+    border-radius:8px;padding:9px 11px;}
+  .next-n{font-size:16px;font-weight:900;color:#D97706;margin-bottom:2px;}
+  .next-t{font-size:10.5px;font-weight:700;color:#fff;margin-bottom:3px;}
+  .next-d{font-size:9px;color:rgba(255,255,255,0.5);line-height:1.4;}
+
+  /* DIVIDER */
+  .divider{height:1px;background:#E2E8F0;margin:14px 0;}
+
+  /* FOOTER */
+  .footer{padding:14px 36px;background:#F6F8FC;border-top:1px solid #E2E8F0;
+    display:flex;justify-content:space-between;align-items:center;}
+  .footer-note{font-size:9px;color:#8FA0B0;line-height:1.5;}
+  .footer-cta{background:#0F2D4A;color:#fff;border-radius:8px;
+    padding:8px 18px;font-size:11px;font-weight:700;border:none;
+    text-decoration:none;display:inline-block;}
+
+  @media print{
+    body{background:#fff;padding:0;}
+    .page{box-shadow:none;border-radius:0;width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <div>
+        <div class="logo-text">RegWatch</div>
+        <div class="logo-sub">Powered by Titania · Inteligencia Regulatoria IA</div>
+      </div>
+    </div>
+    <div class="header-body">
+      <div>
+        <div class="headline">Convierte normativa dispersa<br/>en <span>conocimiento accionable</span></div>
+        <div class="subline">
+          Plataforma de monitoreo e inteligencia regulatoria para el Ministerio de Economía y Finanzas de Ecuador. Monitoreo automático de fuentes oficiales, clasificación IA de documentos y alertas en tiempo real sobre cambios normativos que afectan la gestión del MEF.
+        </div>
+      </div>
+      <div class="badges">
+        <div class="badge">
+          <div class="badge-val">16+</div>
+          <div class="badge-lbl">normas MEF<br/>indexadas</div>
+        </div>
+        <div class="badge">
+          <div class="badge-val">7</div>
+          <div class="badge-lbl">fuentes<br/>monitoreadas</div>
+        </div>
+        <div class="badge">
+          <div class="badge-val">6</div>
+          <div class="badge-lbl">alertas<br/>activas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="main">
+
+    <!-- LEFT COLUMN -->
+    <div class="col-left">
+
+      <!-- EL PROBLEMA -->
+      <div class="sec-label">El desafío institucional</div>
+      <div class="sec-title">Normativa abundante, acceso fragmentado</div>
+      <div class="problem-box">
+        <div class="problem-text">
+          El MEF trabaja con un marco normativo extenso y en permanente evolución: COPYFP, LOSNCP, COOTAD, LOEP, CODA y decenas de acuerdos ministeriales, resoluciones SERCOP y criterios CGE. La información existe, pero está dispersa entre múltiples fuentes, en formatos distintos y sin alertas automáticas cuando algo cambia.
+        </div>
+        <div class="problem-list">
+          <div class="problem-item">⚠️ <span>¿Qué reforma de la LOSNCP aplica hoy al proceso que estoy iniciando?</span></div>
+          <div class="problem-item">⚠️ <span>¿Cambió el modelo de transferencias a los GADs con la reforma de enero?</span></div>
+          <div class="problem-item">⚠️ <span>¿El catálogo SERCOP ya permite contratar servicios de IA directamente?</span></div>
+        </div>
+      </div>
+
+      <!-- CÓMO FUNCIONA -->
+      <div class="sec-label">Cómo funciona</div>
+      <div class="sec-title">Tres pasos, respuesta trazable</div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-t">Corpus indexado</div>
+            <div class="step-d">El sistema ingiere normas, decretos, resoluciones e instructivos desde el Registro Oficial, MEF, SERCOP, Contraloría y MAATE. Cada norma queda con historial de cambios y alertas de modificación.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-t">Procesamiento IA</div>
+            <div class="step-d">Cuando el funcionario hace una consulta, el motor busca en el corpus, identifica las normas relevantes, mapea requisitos, plazos y organismos competentes, y cita la fuente oficial.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-t">Respuesta trazable</div>
+            <div class="step-d">La respuesta incluye: (1) norma que sustenta, (2) organismo responsable, (3) límites de interpretación. El sistema apoya el criterio del funcionario; no lo reemplaza.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NORMAS -->
+      <div class="divider"></div>
+      <div class="sec-label">Corpus piloto — Marco MEF Ecuador</div>
+      <div class="normas-grid">
+        <div class="norma-chip"><div class="norma-n">COPYFP</div><div class="norma-desc">Planificación y Finanzas Públicas</div></div>
+        <div class="norma-chip"><div class="norma-n">LOSNCP</div><div class="norma-desc">Contratación Pública (ref. 2024)</div></div>
+        <div class="norma-chip"><div class="norma-n">COOTAD</div><div class="norma-desc">Territorial y transferencias GADs</div></div>
+        <div class="norma-chip"><div class="norma-n">LOEP</div><div class="norma-desc">Empresas Públicas</div></div>
+        <div class="norma-chip"><div class="norma-n">COPCI</div><div class="norma-desc">Inversión y Fomento Productivo</div></div>
+        <div class="norma-chip"><div class="norma-n">Normas CGE</div><div class="norma-desc">Control Interno Sector Público</div></div>
+        <div class="norma-chip"><div class="norma-n">CODA / TULSMA</div><div class="norma-desc">Ambiente — proyectos inversión</div></div>
+        <div class="norma-chip"><div class="norma-n">Resol. SERCOP</div><div class="norma-desc">Catálogo + contratación directa IA</div></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col-right">
+
+      <!-- 3 DEMOS -->
+      <div class="sec-label">Tres módulos demostrativos</div>
+      <div class="sec-title">Piloto funcional — alcance controlado</div>
+      <div class="demos">
+        <div class="demo">
+          <div class="demo-head">
+            <div class="demo-num">Demo 1</div>
+            <div class="demo-t">💬 Consulta regulatoria trazable</div>
+          </div>
+          <div class="demo-d">Asistente IA que responde qué norma aplica a un trámite del MEF, con cita a la fuente, organismo responsable y advertencia sobre límites de interpretación. Útil para consultas internas, análisis de viabilidad y resolución de dudas normativas.</div>
+        </div>
+        <div class="demo d2">
+          <div class="demo-head">
+            <div class="demo-num">Demo 2</div>
+            <div class="demo-t">🗂 Clasificador de documentos</div>
+          </div>
+          <div class="demo-d">Toma el texto de una norma, resolución o procedimiento y lo clasifica automáticamente: tipo de norma, materia, organismo competente, procedimiento afectado, requisitos, plazos, obligaciones y riesgos de incumplimiento.</div>
+        </div>
+        <div class="demo d3">
+          <div class="demo-head">
+            <div class="demo-num">Demo 3</div>
+            <div class="demo-t">🔔 Vigilancia y alertas</div>
+          </div>
+          <div class="demo-d">Dashboard que detecta cambios normativos en tiempo real, identifica materias afectadas y genera alertas sobre procesos del MEF que deben revisarse ante una modificación regulatoria.</div>
+        </div>
+      </div>
+
+      <!-- ALERTAS ACTIVAS -->
+      <div class="divider"></div>
+      <div class="sec-label">Alertas activas hoy — Ecuador</div>
+      <div class="alerts">
+        <div class="alert">
+          <div class="alert-icon">🔴</div>
+          <div>
+            <div class="alert-t">Reforma COOTAD ene.2025 — nuevo modelo transferencias GADs</div>
+            <div class="alert-d">Afecta directamente la liquidación presupuestaria del MEF hacia GADs. Revisar fórmulas de distribución actualizadas.</div>
+          </div>
+        </div>
+        <div class="alert">
+          <div class="alert-icon">🔴</div>
+          <div>
+            <div class="alert-t">Reglamento LOSNCP post-reforma 2024 pendiente</div>
+            <div class="alert-d">Los nuevos umbrales de contratación directa están vigentes pero el reglamento actualizado no ha sido publicado. Riesgo de observaciones CGE.</div>
+          </div>
+        </div>
+        <div class="alert med">
+          <div class="alert-icon">⚠️</div>
+          <div>
+            <div class="alert-t">Catálogo SERCOP oct.2024 — servicios IA incorporados</div>
+            <div class="alert-d">Los servicios de inteligencia artificial y GovTech ya están en el catálogo normalizado. Abre la puerta a contratación directa de pilotos tecnológicos.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEXT STEPS -->
+      <div class="next">
+        <div class="next-title">Próximos pasos — Piloto Titania × MEF</div>
+        <div class="next-grid">
+          <div class="next-step">
+            <div class="next-n">1</div>
+            <div class="next-t">Firma NDA</div>
+            <div class="next-d">Habilita intercambio de información y define reglas de confidencialidad.</div>
+          </div>
+          <div class="next-step">
+            <div class="next-n">2</div>
+            <div class="next-t">Diagnóstico</div>
+            <div class="next-d">Semanas 1–3: identificar el caso de uso prioritario y el corpus inicial con el equipo MEF.</div>
+          </div>
+          <div class="next-step">
+            <div class="next-n">3</div>
+            <div class="next-t">Piloto funcional</div>
+            <div class="next-d">8–12 semanas. USD 30.000–50.000. Entregable: PV validado + roadmap de escalamiento.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-note">
+      ⚠ RegWatch no automatiza decisiones públicas ni reemplaza el criterio legal o técnico de los funcionarios.<br/>
+      La plataforma apoya la búsqueda, análisis y estructuración de información regulatoria, manteniendo intacta la responsabilidad institucional del MEF.
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:12px;font-weight:800;color:#0F2D4A;margin-bottom:2px;">Titania SpA</div>
+      <div style="font-size:9.5px;color:#8FA0B0;">titan-ia.com · nicolas@quantico.cl</div>
+      <div style="font-size:9px;color:#B0BEC5;margin-top:2px;">Junio 2026</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -354,6 +354,43 @@ export default function TitaniaApp() {
                   setIsVerifying(false);
                 }
 
+              // ── Acceso especial DEMO 02: contraseñas Ecu!$%N ──
+              } else if (selectedDemo === "demo02" && passwordInput.startsWith("Ecu!$%") && emailInput.includes("@")) {
+                setIsVerifying(true);
+                setPasswordError(false);
+                setUnregisteredError(false);
+
+                try {
+                  const res = await fetch("/api/demo02-special/verify-login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ correo: emailInput, password: passwordInput })
+                  });
+                  const data = await res.json();
+
+                  if (data.valido === true) {
+                    setIsAuthenticated(true);
+                    setShowWelcome(true);
+                    setActiveProjectKey("regwatch");
+                    setActiveTab("regwatch");
+                    fetch("/api/log-sheet", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ tipoAccion: "Ingreso", correo: emailInput })
+                    }).catch(console.error);
+                  } else if (data.motivo === "expirado") {
+                    setPasswordError(true);
+                    setUnregisteredError(false);
+                  } else {
+                    setUnregisteredError(true);
+                  }
+                } catch (error) {
+                  console.error("Error validando acceso especial:", error);
+                  setUnregisteredError(true);
+                } finally {
+                  setIsVerifying(false);
+                }
+
               } else {
                 setPasswordError(true);
                 setUnregisteredError(false);

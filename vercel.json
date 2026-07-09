@@ -1,5 +1,11 @@
 {
   "github": {
     "silent": true
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/demo02-special/check-expiry?secret=titania-cron-2025",
+      "schedule": "0 * * * *"
+    }
+  ]
 }
