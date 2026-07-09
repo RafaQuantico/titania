@@ -114,7 +114,7 @@ export async function POST(req: Request) {
                       <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-left:4px solid #94a3b8;border-radius:0 8px 8px 0;margin-bottom:28px;">
                         <tr>
                           <td style="padding:16px 20px;font-size:13px;color:#64748b;line-height:1.6;font-style:italic;">
-                            Este demo trabaja en un entorno especial con datos limitados y solo debe ser explorado con el objetivo de acercarse a la experiencia de la plataforma.
+                            <strong style="font-style:normal;color:#475569;">Advertencia de alcance:</strong> Este demo corresponde a un entorno de prueba, habilitado únicamente para revisión exploratoria. Sus respuestas, resultados y visualizaciones no han sido validados técnica, jurídica ni institucionalmente, por lo que no deben ser considerados como antecedentes oficiales, asesoría legal ni insumos vinculantes para la toma de decisiones.
                           </td>
                         </tr>
                       </table>
