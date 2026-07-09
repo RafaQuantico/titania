@@ -110,6 +110,15 @@ export async function POST(req: Request) {
                         Has sido seleccionado como <strong>usuario especial</strong> para acceder a la demostración privada de <strong>Titania Sync</strong>. Esta es una experiencia exclusiva diseñada para que puedas explorar algunas de las capacidades de nuestra plataforma de inteligencia regulatoria.
                       </p>
 
+                      <!-- Disclaimer -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-left:4px solid #94a3b8;border-radius:0 8px 8px 0;margin-bottom:28px;">
+                        <tr>
+                          <td style="padding:16px 20px;font-size:13px;color:#64748b;line-height:1.6;font-style:italic;">
+                            Este demo trabaja en un entorno especial con datos limitados y solo debe ser explorado con el objetivo de acercarse a la experiencia de la plataforma.
+                          </td>
+                        </tr>
+                      </table>
+
                       <!-- Instrucciones -->
                       <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:28px;">
                         <tr>
