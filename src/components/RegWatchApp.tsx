@@ -484,7 +484,7 @@ function RWFuentes() {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <div className="text-lg font-black text-slate-800">{f.n_indexadas}</div>
-                  <div className="text-[9px] text-slate-400">indexadas</div>
+                  <div className="text-[9px] text-slate-400">normas analizadas</div>
                 </div>
               </div>
               <p className="text-[10px] text-slate-400 leading-relaxed mb-2">{f.desc}</p>
