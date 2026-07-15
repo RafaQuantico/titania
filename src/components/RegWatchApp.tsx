@@ -509,21 +509,19 @@ const RW_TABS = [
   { key: "rw_registro",     label: "Registro Normativo",    icon: "📋" },
   { key: "rw_clasificador", label: "Clasificador IA",       icon: "🗂" },
   { key: "rw_alertas",      label: "Alertas",               icon: "🔔" },
-  { key: "rw_fuentes",      label: "Fuentes",               icon: "🔗" },
 ];
 
-type RWTab = "rw_dashboard" | "rw_registro" | "rw_clasificador" | "rw_alertas" | "rw_fuentes";
+type RWTab = "rw_dashboard" | "rw_registro" | "rw_clasificador" | "rw_alertas";
 
 const TAB_LABEL: Record<RWTab, string> = {
   rw_dashboard:    "Dashboard · RegWatch Ecuador",
   rw_registro:     "Registro Normativo",
   rw_clasificador: "Clasificador de Documentos",
   rw_alertas:      "Alertas Regulatorias",
-  rw_fuentes:      "Gestión de Fuentes",
 };
 
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
-export default function RegWatchApp() {
+export default function RegWatchApp({ view = "default" }: { view?: "default" | "fuentes" }) {
   const [activeTab, setActiveTab] = useState<RWTab>("rw_dashboard");
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showInfographic, setShowInfographic] = useState(false);
@@ -532,6 +530,15 @@ export default function RegWatchApp() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  if (view === "fuentes") {
+    return (
+      <div className="flex flex-col h-full overflow-hidden bg-slate-50 p-5 overflow-y-auto animate-fade-in">
+        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Biblioteca de fuentes</div>
+        <RWFuentes />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -576,7 +583,6 @@ export default function RegWatchApp() {
           {activeTab === "rw_registro"     && <RWRegistro />}
           {activeTab === "rw_clasificador" && <RWClasificador />}
           {activeTab === "rw_alertas"      && <RWAlertas />}
-          {activeTab === "rw_fuentes"      && <RWFuentes />}
         </div>
       </div>
 

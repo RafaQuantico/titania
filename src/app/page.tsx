@@ -875,9 +875,15 @@ export default function TitaniaApp() {
                           <div className="text-white/50 text-[10px] uppercase tracking-wider font-bold">⚡ RegWatch Ecuador</div>
                           <button
                             onClick={() => { setActiveProjectKey('regwatch'); setActiveTab('regwatch'); }}
-                            className={`text-left text-xs transition-colors ${activeProjectKey === 'regwatch' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                            className={`text-left text-xs transition-colors ${activeProjectKey === 'regwatch' && activeTab !== 'rw_fuentes' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
                           >
                             › Inteligencia Regulatoria MEF
+                          </button>
+                          <button
+                            onClick={() => { setActiveProjectKey('regwatch'); setActiveTab('rw_fuentes'); }}
+                            className={`text-left text-xs transition-colors ${activeProjectKey === 'regwatch' && activeTab === 'rw_fuentes' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
+                          >
+                            › Biblioteca de fuentes
                           </button>
                         </>
                       )}
@@ -916,7 +922,7 @@ export default function TitaniaApp() {
 
           {/* ── REGWATCH DEMO 02 ── */}
           {activeProjectKey === 'regwatch' ? (
-            <RegWatchApp />
+            <RegWatchApp view={activeTab === 'rw_fuentes' ? 'fuentes' : 'default'} />
           ) : activeTab === 'biblioteca' ? (
             <>
               <div className="pt-6 md:pt-10 px-4 md:px-10 pb-4 md:pb-6 flex-shrink-0">
