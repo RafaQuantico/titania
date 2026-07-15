@@ -121,16 +121,15 @@ export async function POST(req: Request) {
                       <!-- Disclaimer -->
                       <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:36px;">
                         <tr>
-                          <td style="background:#f8fafc;border-left:3px solid #64748b;padding:16px 20px;">
+                          <td style="background:#fff1f2;border:1px solid #fda4af;border-left:4px solid #e11d48;border-radius:4px;padding:18px 20px;">
                             <table cellpadding="0" cellspacing="0"><tr>
-                              <td style="vertical-align:top;padding-right:10px;padding-top:1px;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <circle cx="12" cy="12" r="10" stroke="#64748b" stroke-width="1.8"/>
-                                  <path d="M12 8v4M12 16h.01" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+                              <td style="vertical-align:top;padding-right:12px;padding-top:2px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                               </td>
-                              <td style="font-size:12px;color:#64748b;line-height:1.7;">
-                                <strong style="color:#475569;font-size:12px;">Advertencia de alcance.</strong> Este demo corresponde a un entorno de prueba, habilitado únicamente para revisión exploratoria. Sus respuestas, resultados y visualizaciones no han sido validados técnica, jurídica ni institucionalmente, por lo que no deben ser considerados como antecedentes oficiales, asesoría legal ni insumos vinculantes para la toma de decisiones.
+                              <td style="font-size:13px;color:#9f1239;line-height:1.6;">
+                                <strong style="color:#be123c;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Advertencia de alcance:</strong> Este demo corresponde a un entorno de prueba, habilitado únicamente para revisión exploratoria. Sus respuestas, resultados y visualizaciones no han sido validados técnica, jurídica ni institucionalmente, por lo que no deben ser considerados como antecedentes oficiales, asesoría legal ni insumos vinculantes para la toma de decisiones.
                               </td>
                             </tr></table>
                           </td>
@@ -219,7 +218,7 @@ export async function POST(req: Request) {
                         <tr>
                           <td style="border-top:1px solid #e2e8f0;width:20px;"></td>
                           <td style="padding:0 12px;white-space:nowrap;">
-                            <span style="font-size:10px;font-weight:700;letter-spacing:3px;color:#94a3b8;text-transform:uppercase;">La plataforma incluye</span>
+                            <span style="font-size:10px;font-weight:700;letter-spacing:3px;color:#94a3b8;text-transform:uppercase;">Esta demostración incluye</span>
                           </td>
                           <td style="border-top:1px solid #e2e8f0;"></td>
                         </tr>
@@ -232,7 +231,7 @@ export async function POST(req: Request) {
                               <td style="padding-right:12px;vertical-align:middle;">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="#2d5a3d" stroke-width="2"/><path d="m16 16 4 4" stroke="#2d5a3d" stroke-width="2" stroke-linecap="round"/></svg>
                               </td>
-                              <td style="font-size:14px;color:#475569;">Análisis regulatorio con inteligencia artificial</td>
+                              <td style="font-size:14px;color:#475569;">Análisis regulatorio con IA de corpus limitado</td>
                             </tr></table>
                           </td>
                         </tr>
@@ -252,7 +251,7 @@ export async function POST(req: Request) {
                               <td style="padding-right:12px;vertical-align:middle;">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" stroke="#2d5a3d" stroke-width="2"/><path d="M7 10h10M7 14h6" stroke="#2d5a3d" stroke-width="2" stroke-linecap="round"/></svg>
                               </td>
-                              <td style="font-size:14px;color:#475569;">Biblioteca documental especializada</td>
+                              <td style="font-size:14px;color:#475569;">Biblioteca especializada de fuentes</td>
                             </tr></table>
                           </td>
                         </tr>
