@@ -115,7 +115,7 @@ export async function POST(req: Request) {
 
                       <p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:#2d5a3d;letter-spacing:1px;text-transform:uppercase;">Estimado/a ${nombre.trim()}</p>
                       <p style="margin:0 0 28px 0;font-size:15px;line-height:1.8;color:#475569;">
-                        Has sido autorizado como <strong style="color:#1a2f24;">usuario especial</strong> para acceder a la demostración privada de <strong style="color:#1a2f24;">Titania SISP Sistemas Inteligentes de Soporte Público</strong>. Esta es una experiencia exclusiva diseñada para que puedas explorar algunas de las capacidades de nuestra plataforma de inteligencia regulatoria.
+                        Has sido autorizado como <strong style="color:#1a2f24;">usuario especial</strong> para acceder a la demostración privada de <strong style="color:#1a2f24;">Titania PISP (Plataforma Inteligente de Soporte Público)</strong>. Esta es una experiencia exclusiva diseñada para que puedas explorar algunas de las capacidades de nuestra plataforma de inteligencia regulatoria.
                       </p>
 
                       <!-- Disclaimer -->
