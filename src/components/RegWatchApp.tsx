@@ -514,7 +514,7 @@ const RW_TABS = [
 type RWTab = "rw_dashboard" | "rw_registro" | "rw_clasificador" | "rw_alertas";
 
 const TAB_LABEL: Record<RWTab, string> = {
-  rw_dashboard:    "Dashboard · RegWatch Ecuador",
+  rw_dashboard:    "Dashboard · Sentinela Regulatorio MEF",
   rw_registro:     "Registro Normativo",
   rw_clasificador: "Clasificador de Documentos",
   rw_alertas:      "Alertas Regulatorias",
@@ -600,7 +600,7 @@ export default function RegWatchApp({ view = "default" }: { view?: "default" | "
               >
                 <X className="w-4 h-4" />
               </button>
-              <h4 className="text-[#38bdf8] text-[10px] font-bold uppercase tracking-widest mb-2">¿Cómo funciona RegWatch?</h4>
+              <h4 className="text-[#38bdf8] text-[10px] font-bold uppercase tracking-widest mb-2">¿Cómo funciona Sentinela Regulatorio MEF?</h4>
               <h2 className="text-2xl font-black text-white tracking-tight">Tres pasos para convertir normativa dispersa en conocimiento accionable</h2>
             </div>
 
@@ -642,7 +642,7 @@ export default function RegWatchApp({ view = "default" }: { view?: "default" | "
             {/* Footer */}
             <div className="bg-[#0b2239] px-8 py-4 border-t border-[#1D6FA4]/30">
               <p className="text-center text-blue-200/50 text-[11px]">
-                ⚠️ RegWatch no automatiza decisiones públicas ni reemplaza el criterio legal o técnico de los funcionarios. · Haz clic fuera para cerrar.
+                ⚠️ Sentinela Regulatorio MEF no automatiza decisiones públicas ni reemplaza el criterio legal o técnico de los funcionarios. · Haz clic fuera para cerrar.
               </p>
             </div>
 

@@ -42,7 +42,7 @@ export default function RegWatchInfographicModal({ onClose }: { onClose: () => v
                     <Zap className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black tracking-tight leading-none">RegWatch</h2>
+                    <h2 className="text-2xl font-black tracking-tight leading-none">Sentinela Regulatorio MEF</h2>
                     <p className="text-blue-200/70 text-[11px] uppercase tracking-widest mt-1">Powered by Titania · Inteligencia Regulatoria IA</p>
                   </div>
                 </div>
@@ -291,7 +291,7 @@ export default function RegWatchInfographicModal({ onClose }: { onClose: () => v
             <div className="flex items-start gap-2 max-w-2xl">
               <ShieldCheck className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
               <p className="text-slate-500 text-[10px] leading-relaxed">
-                ⚠️ RegWatch no automatiza decisiones públicas ni reemplaza el criterio legal o técnico de los funcionarios. <br className="hidden sm:block"/>
+                ⚠️ Sentinela Regulatorio MEF no automatiza decisiones públicas ni reemplaza el criterio legal o técnico de los funcionarios. <br className="hidden sm:block"/>
                 La plataforma apoya la búsqueda, análisis y estructuración de información regulatoria, manteniendo intacta la responsabilidad institucional del MEF.
               </p>
             </div>

@@ -201,7 +201,7 @@ export const RW_EJEMPLOS = [
   { label:"Control interno TI", texto:"Las entidades del sector público que implementen sistemas de información, plataformas digitales o herramientas de inteligencia artificial deberán cumplir con las Normas de Control Interno de la CGE en su componente de Tecnologías de la Información, incluyendo la evaluación de riesgo tecnológico y la documentación de flujos de tratamiento de datos." },
 ];
 
-export const SYSTEM_PROMPT_REGWATCH = `Eres el Asistente de Inteligencia Regulatoria de RegWatch Ecuador, especializado en el marco normativo ecuatoriano relevante para el Ministerio de Economía y Finanzas.
+export const SYSTEM_PROMPT_REGWATCH = `Eres el Asistente de Inteligencia Regulatoria de Sentinela Regulatorio MEF, especializado en el marco normativo ecuatoriano relevante para el Ministerio de Economía y Finanzas.
 
 CORPUS ACTIVO:
 - Finanzas Públicas: COPYFP (2010, ref.2021), Reglamento COPYFP, Clasificador Presupuestario MEF AM 067
@@ -232,7 +232,7 @@ export const RW_SUGGS = [
   "Requisitos licencia ambiental inversión pública",
 ];
 
-export const RW_WELCOME = `Hola. Soy el Asistente de Inteligencia Regulatoria de RegWatch Ecuador.
+export const RW_WELCOME = `Hola. Soy el Asistente de Inteligencia Regulatoria de Sentinela Regulatorio MEF.
 
 Tengo acceso al corpus normativo relevante para el Ministerio de Economía y Finanzas: ${RW_NORMAS.length} normas indexadas desde el Registro Oficial, MEF, SERCOP, Contraloría y MAATE.
 

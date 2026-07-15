@@ -625,7 +625,7 @@ export default function TitaniaApp() {
                 ) : (
                   <>
                     <p className="text-white/80 text-sm leading-relaxed mb-6">
-                      Estás explorando una versión demostrativa de <span className="text-white font-semibold">RegWatch Ecuador</span>, impulsado por el motor de IA de Titania.
+                      Estás explorando una versión demostrativa de <span className="text-white font-semibold">Sentinela Regulatorio MEF</span>, impulsado por el motor de IA de Titania.
                     </p>
 
                     <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
@@ -690,7 +690,7 @@ export default function TitaniaApp() {
                   <p className="text-white/70 text-xs leading-relaxed mb-4">
                     {selectedDemo === 'demo01'
                       ? "Desde aquí accedes a tus proyectos y a la biblioteca documental del expediente SEIA."
-                      : "Desde aquí accedes a las herramientas de inteligencia regulatoria de RegWatch."}
+                      : "Desde aquí accedes a las herramientas de inteligencia regulatoria de Sentinela Regulatorio MEF."}
                   </p>
                   <div className="flex items-center justify-between">
                     <button onClick={() => setTourStep(0)} className="text-white/30 text-xs hover:text-white/60 transition-colors">Saltar tour</button>
@@ -864,7 +864,7 @@ export default function TitaniaApp() {
                       )}
                       {selectedDemo === 'demo02' && (
                         <>
-                          <div className="text-white/50 text-[10px] uppercase tracking-wider font-bold">⚡ RegWatch Ecuador</div>
+                          <div className="text-white/50 text-[10px] uppercase tracking-wider font-bold">⚡ Sentinela Regulatorio MEF</div>
                           <button
                             onClick={() => { setActiveProjectKey('regwatch'); setActiveTab('regwatch'); }}
                             className={`text-left text-xs transition-colors ${activeProjectKey === 'regwatch' && activeTab !== 'rw_fuentes' ? 'text-emerald-300 font-bold' : 'text-white/70 hover:text-white'}`}
