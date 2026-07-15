@@ -66,9 +66,9 @@ export async function GET(req: Request) {
           const horasRestantes = Math.max(0, Math.floor(72 - horasTranscurridas));
 
           await transporter.sendMail({
-            from: '"Titania Sync" <contacto@titan-ia.com>',
+            from: '"Titania SPIP" <contacto@titan-ia.com>',
             to: usuario.correo,
-            subject: '⚠️ Tu acceso a Titania Sync expira en 24 horas',
+            subject: '⚠️ Tu acceso a Titania SPIP expira en 24 horas',
             html: `
               <!DOCTYPE html>
               <html>
@@ -85,7 +85,7 @@ export async function GET(req: Request) {
                             <img src="${BASE_URL}/titania-logo.png" alt="Titania" width="120" style="display:block;margin:0 0 32px 0;filter:brightness(0) invert(1);" />
                             <p style="margin:0 0 24px 0;font-size:10px;font-weight:700;letter-spacing:4px;color:#fcd34d;text-transform:uppercase;">Aviso Importante</p>
                             <h1 style="margin:0 0 6px 0;font-size:28px;font-weight:800;color:#ffffff;line-height:1.15;letter-spacing:-0.5px;">Expira en ~${horasRestantes} horas</h1>
-                            <p style="margin:0;font-size:13px;color:#fde68a;letter-spacing:2px;text-transform:uppercase;">Titania Sync &nbsp;&middot;&nbsp; DEMO 02</p>
+                            <p style="margin:0;font-size:13px;color:#fde68a;letter-spacing:2px;text-transform:uppercase;">Titania SPIP &nbsp;&middot;&nbsp; DEMO 02</p>
                           </td>
                         </tr>
 
@@ -94,7 +94,7 @@ export async function GET(req: Request) {
                           <td style="padding:44px 48px;">
                             <p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:#92400e;letter-spacing:1px;text-transform:uppercase;">Estimado/a ${usuario.nombre.trim()}</p>
                             <p style="margin:0 0 24px 0;font-size:15px;line-height:1.8;color:#475569;">
-                              Su período de acceso especial a <strong style="color:#1a2f24;">Titania Sync DEMO 02</strong> está por finalizar. Le quedan aproximadamente <strong>${horasRestantes} horas</strong> para explorar la plataforma.
+                              Su período de acceso especial a <strong style="color:#1a2f24;">Titania SPIP DEMO 02</strong> está por finalizar. Le quedan aproximadamente <strong>${horasRestantes} horas</strong> para explorar la plataforma.
                             </p>
 
                             <table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbeb;border:1px solid #f59e0b;border-radius:3px;margin-bottom:32px;">
@@ -137,7 +137,7 @@ export async function GET(req: Request) {
                         <!-- Footer -->
                         <tr>
                           <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:24px 48px;text-align:center;">
-                            <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.7;">Equipo Titania Sync &nbsp;&middot;&nbsp; <a href="mailto:contacto@titan-ia.com" style="color:#64748b;text-decoration:none;">contacto@titan-ia.com</a></p>
+                            <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.7;">Equipo Titania SPIP &nbsp;&middot;&nbsp; <a href="mailto:contacto@titan-ia.com" style="color:#64748b;text-decoration:none;">contacto@titan-ia.com</a></p>
                           </td>
                         </tr>
                       </table>
@@ -160,9 +160,9 @@ export async function GET(req: Request) {
         // ── EXPIRACIÓN: han pasado ≥ 72h ──
         if (horasTranscurridas >= 72 && !usuario.expiracion_enviada) {
           await transporter.sendMail({
-            from: '"Titania Sync" <contacto@titan-ia.com>',
+            from: '"Titania SPIP" <contacto@titan-ia.com>',
             to: usuario.correo,
-            subject: '🙏 Tu experiencia con Titania Sync ha finalizado — ¡Gracias!',
+            subject: '🙏 Tu experiencia con Titania SPIP ha finalizado — ¡Gracias!',
             html: `
               <!DOCTYPE html>
               <html>
@@ -179,7 +179,7 @@ export async function GET(req: Request) {
                             <img src="${BASE_URL}/titania-logo.png" alt="Titania" width="120" style="display:block;margin:0 0 32px 0;" />
                             <p style="margin:0 0 24px 0;font-size:10px;font-weight:700;letter-spacing:4px;color:#518b62;text-transform:uppercase;">Acceso Finalizado</p>
                             <h1 style="margin:0 0 6px 0;font-size:32px;font-weight:800;color:#ffffff;line-height:1.15;letter-spacing:-0.5px;">¡Gracias por su interés!</h1>
-                            <p style="margin:0;font-size:13px;color:#6dab84;letter-spacing:2px;text-transform:uppercase;">Titania Sync &nbsp;&middot;&nbsp; DEMO 02</p>
+                            <p style="margin:0;font-size:13px;color:#6dab84;letter-spacing:2px;text-transform:uppercase;">Titania SPIP &nbsp;&middot;&nbsp; DEMO 02</p>
                           </td>
                         </tr>
 
@@ -188,7 +188,7 @@ export async function GET(req: Request) {
                           <td style="padding:44px 48px;">
                             <p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:#2d5a3d;letter-spacing:1px;text-transform:uppercase;">Estimado/a ${usuario.nombre.trim()}</p>
                             <p style="margin:0 0 20px 0;font-size:15px;line-height:1.8;color:#475569;">
-                              Su período de acceso especial a <strong style="color:#1a2f24;">Titania Sync DEMO 02</strong> ha finalizado. Esperamos que la experiencia haya sido valiosa y que haya podido explorar el potencial de nuestra plataforma de inteligencia regulatoria.
+                              Su período de acceso especial a <strong style="color:#1a2f24;">Titania SPIP DEMO 02</strong> ha finalizado. Esperamos que la experiencia haya sido valiosa y que haya podido explorar el potencial de nuestra plataforma de inteligencia regulatoria.
                             </p>
                             <p style="margin:0 0 32px 0;font-size:15px;line-height:1.8;color:#475569;">
                               Si tiene preguntas, desea obtener más información sobre nuestros servicios, o está listo para dar el siguiente paso, nuestro equipo está disponible para acompañarle.
@@ -200,7 +200,7 @@ export async function GET(req: Request) {
                                 <td style="padding:28px 24px;text-align:center;">
                                   <p style="margin:0 0 8px 0;font-size:14px;color:#1a2f24;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">¿Listo para seguir adelante?</p>
                                   <p style="margin:0 0 24px 0;font-size:14px;color:#475569;line-height:1.6;">Contáctese con su ejecutivo Titania para más información o para adquirir el servicio.</p>
-                                  <a href="mailto:contacto@titan-ia.com?subject=Información sobre Titania Sync - ${encodeURIComponent(usuario.nombre.trim())}" 
+                                  <a href="mailto:contacto@titan-ia.com?subject=Información sobre Titania SPIP - ${encodeURIComponent(usuario.nombre.trim())}" 
                                      style="display:inline-block;background:linear-gradient(135deg,#1a2f24,#2d5a3d);color:#ffffff;text-decoration:none;font-weight:700;font-size:13px;padding:16px 40px;border-radius:3px;letter-spacing:2px;text-transform:uppercase;">
                                     Contactar a Titania
                                   </a>
@@ -219,7 +219,7 @@ export async function GET(req: Request) {
                         <tr>
                           <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:24px 48px;text-align:center;">
                             <p style="margin:0 0 6px 0;font-size:11px;color:#64748b;line-height:1.7;">Fue un placer tenerle en nuestra plataforma, <strong style="color:#475569;">${usuario.nombre.trim()}</strong>.</p>
-                            <p style="margin:0;font-size:11px;color:#94a3b8;">Equipo Titania Sync &nbsp;&middot;&nbsp; <a href="mailto:contacto@titan-ia.com" style="color:#94a3b8;text-decoration:none;">contacto@titan-ia.com</a></p>
+                            <p style="margin:0;font-size:11px;color:#94a3b8;">Equipo Titania SPIP &nbsp;&middot;&nbsp; <a href="mailto:contacto@titan-ia.com" style="color:#94a3b8;text-decoration:none;">contacto@titan-ia.com</a></p>
                           </td>
                         </tr>
 
