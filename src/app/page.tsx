@@ -814,15 +814,7 @@ export default function TitaniaApp() {
 
             {!isSidebarCollapsed && (<>
 
-              {/* Search Bar */}
-              <div className="relative mb-8">
-                <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar"
-                  className="w-full bg-white/90 backdrop-blur-sm rounded-full py-2.5 pl-5 pr-10 text-sm text-slate-700 placeholder-slate-400 font-medium border-0 focus:ring-2 focus:ring-white/60 focus:outline-none transition-all"
-                />
-              </div>
+
 
               {/* Navigation Links */}
               <div className="flex flex-col gap-5 pl-1">
