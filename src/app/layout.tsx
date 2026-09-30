@@ -16,9 +16,16 @@ export const metadata: Metadata = {
   title: "Titania Sync",
   description: "Plataforma de seguimiento y gestión de compromisos ambientales SEIA. Análisis inteligente de la Matriz de Compromisos Ambientales.",
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
-    apple: "/icon.png",
+    icon: "/t.png",
+    shortcut: "/t.png",
+    apple: "/t.png",
+  },
+  openGraph: {
+    images: ["/fotos/IA-6.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/fotos/IA-6.png"],
   },
 };
 

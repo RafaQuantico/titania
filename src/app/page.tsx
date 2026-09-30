@@ -311,7 +311,8 @@ export default function TitaniaApp() {
               e.preventDefault();
               const isDemo01Valid = selectedDemo === "demo01" && passwordInput === "DemoTitania1122!";
               const isDemo02Valid = selectedDemo === "demo02" && passwordInput === "DemoTitania2233!";
-              if ((isDemo01Valid || isDemo02Valid) && emailInput.includes("@")) {
+              const isDemo03Valid = selectedDemo === "demo03" && passwordInput === "DemoTitania3344!";
+              if ((isDemo01Valid || isDemo02Valid || isDemo03Valid) && emailInput.includes("@")) {
                 
                 setIsVerifying(true);
                 setPasswordError(false);
@@ -409,6 +410,7 @@ export default function TitaniaApp() {
                >
                  <option value="demo01">DEMO 01</option>
                  <option value="demo02">DEMO 02</option>
+                 <option value="demo03">DEMO 03</option>
                </select>
             </div>
             <div className="flex w-full shadow-xl flex-col sm:flex-row rounded-xl overflow-hidden border border-white/20">
@@ -532,6 +534,7 @@ export default function TitaniaApp() {
                        <select value={requestForm.demo} onChange={e => setRequestForm({...requestForm, demo: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-3.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#518b62]/50 focus:border-[#518b62] transition-all cursor-pointer">
                          <option value="demo01">DEMO 01</option>
                          <option value="demo02">DEMO 02</option>
+                         <option value="demo03">DEMO 03</option>
                        </select>
                      </div>
                      <div>
@@ -561,6 +564,14 @@ export default function TitaniaApp() {
   }
 
   // ── RENDER ──
+  if (selectedDemo === "demo03") {
+    return (
+      <div className="w-full h-[100dvh] bg-[#1e293b]">
+        <iframe src="/demo03/index.html" className="w-full h-full border-none outline-none block" title="TITANIA_SYNC_Compliance_Next"></iframe>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className={`flex flex-col md:flex-row h-[100dvh] w-full bg-[#f8fafc] font-sans text-slate-800 overflow-hidden relative ${isGeneratingPdf || pdfReportData ? 'print:hidden' : ''}`}>
