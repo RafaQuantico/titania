@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@source "../";
 @theme inline {
   --color-titania-brand: #8ebc9b;
   --color-titania-dark: #2c4c3b;
